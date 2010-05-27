@@ -35,6 +35,7 @@
             this.tickButton = new System.Windows.Forms.Button();
             this.tickText = new System.Windows.Forms.TextBox();
             this.topMostCheck = new System.Windows.Forms.CheckBox();
+            this.positionText = new System.Windows.Forms.TextBox();
             ((System.ComponentModel.ISupportInitialize)(this.valueBar)).BeginInit();
             this.SuspendLayout();
             // 
@@ -106,11 +107,21 @@
             this.topMostCheck.UseVisualStyleBackColor = true;
             this.topMostCheck.CheckedChanged += new System.EventHandler(this.topMostCheck_CheckedChanged);
             // 
+            // positionText
+            // 
+            this.positionText.Location = new System.Drawing.Point(12, 200);
+            this.positionText.Name = "positionText";
+            this.positionText.ReadOnly = true;
+            this.positionText.Size = new System.Drawing.Size(168, 19);
+            this.positionText.TabIndex = 8;
+            this.positionText.TextChanged += new System.EventHandler(this.positionText_TextChanged);
+            // 
             // DebugWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(292, 273);
+            this.Controls.Add(this.positionText);
             this.Controls.Add(this.topMostCheck);
             this.Controls.Add(this.tickText);
             this.Controls.Add(this.tickButton);
@@ -137,6 +148,7 @@
         private System.Windows.Forms.Button tickButton;
         private System.Windows.Forms.TextBox tickText;
         private System.Windows.Forms.CheckBox topMostCheck;
+        private System.Windows.Forms.TextBox positionText;
     }
 }
 

@@ -4,7 +4,7 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace FarseerPhysicsTutorial1 {
 
-	class Drawer {
+	public class Drawer {
 		readonly GraphicsDevice graphicsDevice;
 		BasicEffect effect;
 		Vector2[] vertices = new Vector2[32768];

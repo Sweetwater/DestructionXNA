@@ -1,3 +1,5 @@
+#define DEBUG_WINDOW
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,9 +19,11 @@ using FarseerPhysicsTutorial1;
 using FarseerGames.FarseerPhysics.Dynamics.Joints;
 using FarseerGames.FarseerPhysics.Dynamics.Springs;
 using DebugTool;
+using FarseerGames.FarseerPhysics.Factories;
 
 namespace DestructionXNA
 {
+
     /// <summary>
     /// This is the main type for your game
     /// </summary>
@@ -32,129 +36,159 @@ namespace DestructionXNA
         State state;
 
         GraphicsDeviceManager graphics;
+
         SpriteBatch spriteBatch;
+        public SpriteBatch SpriteBatch {
+            get { return spriteBatch; }
+        }
+
+        PhysicsSimulator physicsSimulator;
+        public PhysicsSimulator PhysicsSimulator{
+            get { return physicsSimulator; }
+        }
+
+        Matrix projection;
+        public Matrix Projection {
+            get { return projection; }
+        }
+
+        DebugWindow debugWindow;
+        public DebugWindow DebugWindow {
+            get { return debugWindow; }
+        }
+
+        InputState inputState;
+        public InputState InputState
+        {
+            get { return inputState; }
+        }
+
 
         Drawer drawer;
+        public Drawer Drawer {
+            get { return drawer; }
+        }
 
-        PhysicsSimulator world = new PhysicsSimulator();
+        public int ScreenWidth {
+            get { return 640; }
+        }
+        public int ScreenHeight
+        {
+            get { return 480; }
+        }
 
-        Body playerBody = new Body();
-        Geom playerGeom;
+        Random random;
 
-        Body body = new Body();
-        Geom geom;
-        Body groundBody = new Body();
+        Player player;
+        Controller controller;
+
+        Body groundBody;
         Geom groundGeom;
 
-        readonly List<Geom> geoms = new List<Geom>();
-
-        KeyboardState oldKeyState;
-        KeyboardState newKeyState;
-
-        float forceAmount = 1;
-        DebugWindow debugWindow;
-
-        Geom AddObject(Vector2 position, float rotation, float mass, Vertices vertices)
-        {
-            var body = new Body();
-            world.Add(body);
-            body.Position = position;
-            body.Rotation = rotation;
-            vertices.SubDivideEdges(0.5f); // 辺を細分割する。
-            var geom = new Geom(body, vertices, 1);
-            body.Mass = mass;
-            body.MomentOfInertia = mass * vertices.GetMomentOfInertia();
-            world.Add(geom);
-            geoms.Add(geom);
-            return geom;
-        }
+        Body[] blockBodys;
+        Geom[] blockGeoms;
 
         public Game1()
         {
             graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
-            graphics.PreferredBackBufferWidth = 640;
-            graphics.PreferredBackBufferHeight = 480;
+            graphics.PreferredBackBufferWidth = ScreenWidth;
+            graphics.PreferredBackBufferHeight = ScreenHeight;
 
             graphics.PreferMultiSampling = false;
-            TargetElapsedTime = TimeSpan.FromSeconds(1.0 / 240);
 
-            world.Gravity = new Vector2(0, 9.8f);
+            TargetElapsedTime = new TimeSpan(0, 0, 0, 0, 10);
+            IsFixedTimeStep = true;
+            IsMouseVisible = true;
 
-            // 箱
-            {
-                //world.Add(body);
-                //body.Rotation = 0.1f;
-                //var verticesVector = new Vector2[]{
-                //    new Vector2(-1, -1),
-                //    new Vector2(+1, -1),
-                //    new Vector2(+1, +1),
-                //    new Vector2(-1, +1),
-                //};
-                //var vertices = new Vertices(verticesVector);
-                //vertices.SubDivideEdges(0.5f);
-                //geom = new Geom(body, vertices, 1);
-                //world.Add(geom);
-            }
-
-            // 地面
-            {
-                world.Add(groundBody);
-                groundBody.IsStatic = true;
-
-                var verticesVector = new Vector2[]{
-                    new Vector2(-10, +9),
-                    new Vector2(+10, +9),
-                    new Vector2(+10, +10),
-                    new Vector2(-10, +10),
-                };
-                var vertices = new Vertices(verticesVector);
-                vertices.SubDivideEdges(0.125f);
-                groundGeom = new Geom(groundBody, vertices, 1);
-                groundGeom.FrictionCoefficient = 0.05f;
-                world.Add(groundGeom);
-            }
-
-            //// 4角形の物体
-            //var geom1 = AddObject(new Vector2(0, 0), 0.1f, 10, new Vertices(new Vector2[] {
-            //    new Vector2(-1, -1),
-            //    new Vector2(+1, -1),
-            //    new Vector2(+1, +1),
-            //    new Vector2(-1, +1),
-            //}));
-
-            //// 5角形の物体
-            //var geom2 = AddObject(new Vector2(2, 0), 0.2f, 0.1f, new Vertices(new Vector2[] {
-            //    new Vector2(-2, -2),
-            //    new Vector2(+1, -1),
-            //    new Vector2(+1, +0),
-            //    new Vector2(+0, +1),
-            //    new Vector2(-1, +1),
-            //}));
-
-            //// 4角形をワールドに回転関節でつなぐ。
-            //world.Add(new FixedRevoluteJoint(geom1.Body, new Vector2(0.5f, 0)));
-            //// 5角形をワールドにバネでつなぐ。
-            //world.Add(new FixedLinearSpring(geom2.Body, new Vector2(0, 0), new Vector2(0, 0), 3.0f, 0.2f));
-
-            CreatePlayer();
+            random = new Random();
+            inputState = new InputState();
         }
 
-        private void CreatePlayer() {
-            world.Add(playerBody);
-//            playerBody.Rotation = 0.1f;
-            var verticesVector = new Vector2[]{
-                    new Vector2(-1, -2),
-                    new Vector2(+1, -2),
-                    new Vector2(+1, +2),
-                    new Vector2(-1, +2),
-                };
-            var vertices = new Vertices(verticesVector);
-            vertices.SubDivideEdges(0.5f);
-            playerGeom = new Geom(playerBody, vertices, 1);
-            playerBody.Position = new Vector2(0, 8);
-            world.Add(playerGeom);
 
+        private int rectNum = 5;
+        private int circleNum = 5;
+        private int triNum = 5;
+
+        private float fluctuation = 3;
+
+        private float rectWidth = 20;
+        private float rectHeight = 20;
+        private float rectMass = 1;
+
+        private float circleRadius = 10;
+        private int circleEdge = 10;
+
+        private float blockY = 50;
+
+        private void CreateBlock()
+        {
+            //blockBodys = new Body[rectNum + circleNum + triNum];
+            //blockGeoms = new Geom[rectNum + circleNum + triNum];
+            blockBodys = new Body[rectNum];
+            blockGeoms = new Geom[rectNum];
+
+            CreateRectBlock();
+            //CreateCircleBlock();
+        }
+
+        private void CreateRectBlock()
+        {
+            for (int i = 0; i < rectNum; i++)
+            {
+                float width = rectWidth * GetRandom(1, fluctuation);
+                float height = rectHeight * GetRandom(1, fluctuation);
+                float mass = rectMass * GetRandom(1, fluctuation);
+                Vector2 position = new Vector2(GetRandom(-ScreenWidth / 2, ScreenWidth / 2), blockY);
+
+                blockBodys[i] = BodyFactory.Instance.CreateRectangleBody(
+                    physicsSimulator,
+                    width, height, mass);
+                blockGeoms[i] = GeomFactory.Instance.CreateRectangleGeom(
+                    physicsSimulator,
+                    blockBodys[i], width, height);
+
+                blockGeoms[i].FrictionCoefficient = 0.8f;
+                blockBodys[i].Position = position;
+            }
+
+        }
+
+        private void CreateCircleBlock()
+        {
+            for (int i = 0; i < circleNum; i++)
+            {
+                float radius = circleRadius * GetRandom(1, fluctuation);
+                float mass = rectMass * GetRandom(1, fluctuation);
+                Vector2 position = new Vector2(GetRandom(-ScreenWidth / 2, ScreenWidth / 2), blockY);
+
+                blockBodys[i] = BodyFactory.Instance.CreateCircleBody(
+                    physicsSimulator,
+                    radius, mass);
+                blockGeoms[i] = GeomFactory.Instance.CreateCircleGeom(
+                    physicsSimulator,
+                    blockBodys[i], radius, circleEdge);
+
+                blockBodys[i].Position = position;
+            }
+        }
+
+
+        private float GetRandom(float min, float max)
+        {
+            return min + (float)random.NextDouble() * (max - min);
+        }
+
+        private void CreateGround()
+        {
+            groundBody = BodyFactory.Instance.CreateRectangleBody(physicsSimulator, 600, 20, 1);
+            groundBody.IsStatic = true;
+
+            groundGeom = GeomFactory.Instance.CreateRectangleGeom(physicsSimulator, groundBody, 600, 20);
+            groundGeom.RestitutionCoefficient = 0.2f;
+            groundGeom.FrictionCoefficient = 0.8f;
+
+            groundBody.Position = new Vector2(0, 230);
         }
 
         /// <summary>
@@ -166,6 +200,11 @@ namespace DestructionXNA
         protected override void Initialize()
         {
             // TODO: Add your initialization logic here
+
+#if DEBUG && DEBUG_WINDOW
+            debugWindow = new DebugWindow();
+            debugWindow.Show();
+#endif
 
             base.Initialize();
         }
@@ -180,18 +219,25 @@ namespace DestructionXNA
             spriteBatch = new SpriteBatch(GraphicsDevice);
 
             // TODO: use this.Content to load your game content here
+            float viewWidth = GraphicsDevice.Viewport.Width;
+            float viewHeight = GraphicsDevice.Viewport.Height;
+            projection = Matrix.CreateOrthographicOffCenter(-viewWidth / 2, viewWidth / 2, viewHeight / 2, -viewHeight / 2, -10, 10);
+
             drawer = new Drawer(GraphicsDevice);
 
-            state = State.Start;
+            physicsSimulator = new PhysicsSimulator(new Vector2(0, 100));
+            CreateGround();
+            CreateBlock();
 
-            debugWindow = new DebugWindow();
-            debugWindow.Value = playerBody.Position.Y;
-            debugWindow.ApplyValue += delegate(float value)
-            {
-                Vector2 position = new Vector2(playerBody.Position.X, value);
-                playerBody.Position = position;
-            };
-            debugWindow.Show();
+
+            player = new Player(
+                this,
+                Content.Load<Texture2D>("niconicoTVchan64"),
+                Content.Load<Model>("anttenaChip"));
+
+            controller = new Controller(this, player, blockBodys);
+
+            state = State.Start;
         }
 
         /// <summary>
@@ -210,17 +256,27 @@ namespace DestructionXNA
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Update(GameTime gameTime)
         {
+            inputState.Update();
+
             // Allows the game to exit
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed)
                 this.Exit();
 
-            newKeyState = Keyboard.GetState();
+#if DEBUG && DEBUG_WINDOW            
+            if (this.IsActive &&
+                inputState.NewMouseState.LeftButton == ButtonState.Pressed) {
+
+                float x = inputState.NewMouseState.X - 320;
+                float y = inputState.NewMouseState.Y - 240;
+                debugWindow.SetPositionText(x, y);
+            }
+#endif
 
             // TODO: Add your update logic here
             switch (state)
             {
                 case State.Start:
-                    if (newKeyState.IsKeyDown(Keys.Enter)) {
+                    if (inputState.IsTrigger(Keys.Enter)) {
                         state = State.Play;
                     }
                     break;
@@ -231,42 +287,14 @@ namespace DestructionXNA
                     break;
             }
 
-
-            oldKeyState = newKeyState;
             base.Update(gameTime);
         }
 
         private void UpdatePlay(GameTime gameTime)
         {
-            const float moveAmount = 0.01f;
-            Vector2 move = Vector2.Zero;
-            Vector2 force = Vector2.Zero;
-
-            if (newKeyState.IsKeyDown(Keys.Left))
-            {
-                move += new Vector2(-moveAmount, 0);
-            }
-            if (newKeyState.IsKeyDown(Keys.Right))
-            {
-                move += new Vector2(moveAmount, 0);
-            }
-
-            if (IsKeyRelease(Keys.Left))
-            {
-                force += new Vector2(-forceAmount, 0);
-            }
-            if (IsKeyRelease(Keys.Right))
-            {
-                force += new Vector2(forceAmount, 0);
-            }
-
-            playerBody.Position += move;
-            playerBody.ApplyForce(force);
-            world.Update((float)gameTime.ElapsedGameTime.TotalSeconds);
-        }
-
-        private bool IsKeyRelease(Keys key) {
-            return oldKeyState.IsKeyDown(key) && !newKeyState.IsKeyDown(key);
+            controller.Update();
+            player.Update(gameTime);
+            physicsSimulator.Update((float)gameTime.ElapsedGameTime.TotalSeconds);
         }
 
         void Draw(Geom geom)
@@ -283,15 +311,16 @@ namespace DestructionXNA
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
             // TODO: Add your drawing code here
-            var aspectRatio = GraphicsDevice.Viewport.AspectRatio;
-            drawer.Begin(Matrix.CreateOrthographicOffCenter(-10 * aspectRatio, 10 * aspectRatio, 10, -10, -10, 10));
-            foreach (var geom in geoms) {
-                Draw(geom);
-            }
-            //Draw(this.geom);
-            Draw(playerGeom);
+            drawer.Begin(projection);
             Draw(groundGeom);
+
+            foreach (Geom blockGeom in blockGeoms)
+            {
+                Draw(blockGeom);
+            }
             drawer.End();
+
+            player.Draw();
 
             base.Draw(gameTime);
         }

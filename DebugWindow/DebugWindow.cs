@@ -85,5 +85,14 @@ namespace DebugTool
         {
             this.TopMost = !this.TopMost;
         }
+
+        private void positionText_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        public void SetPositionText(float x, float y) {
+            this.positionText.Text = "x:" + x + " y:" + y;
+        }
     }
 }
