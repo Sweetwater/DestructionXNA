@@ -4,6 +4,8 @@ using System.Text;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 
+#if false
+
 namespace DestructionXNA {
 	/// <summary>
 	/// First person camera component for the demos, rotated by mouse.
@@ -160,3 +162,4 @@ namespace DestructionXNA {
 		}
 	}
 }
+#endif

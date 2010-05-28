@@ -5,6 +5,8 @@ using JigLibX.Physics;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
+#if false
+
 namespace DestructionXNA.PhysicObjects {
 	public class BoxObject : PhysicObject {
 		public BoxObject(Game game, Context context, Model model, Vector3 sideLengths,
@@ -37,3 +39,4 @@ namespace DestructionXNA.PhysicObjects {
 		}
 	}
 }
+#endif

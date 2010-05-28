@@ -2,6 +2,8 @@ using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
+#if false
+
 namespace DestructionXNA {
 	public class DebugDrawer : DrawableGameComponent {
 		BasicEffect basicEffect;
@@ -108,3 +110,4 @@ namespace DestructionXNA {
 
 	}
 }
+#endif

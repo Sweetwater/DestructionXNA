@@ -89,10 +89,12 @@
     <Compile Include="Camera.cs" />
     <Compile Include="DebugDrawer.cs" />
     <Compile Include="InputState.cs" />
+    <Compile Include="NicoNicoTVChan.cs" />
     <Compile Include="PhysicObject.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Game1.cs" />
+    <Compile Include="Floor.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Game.ico" />
