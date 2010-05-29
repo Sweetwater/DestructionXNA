@@ -6,6 +6,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework;
 using System.Diagnostics;
 using Microsoft.Xna.Framework.Input;
+using JigLibX.Physics;
 
 namespace DestructionXNA
 {
@@ -16,7 +17,8 @@ namespace DestructionXNA
 
         private PhysicsObject physicsObject;
 
-        private Vector3 position = new Vector3(0, 1, 0);
+
+        private Vector3 position = new Vector3(0, 0.2f, 0);
         private Matrix orientation = Matrix.Identity;
 
         private Vector3 length = new Vector3(0.264f, 0.23f, 0.16f);
@@ -27,17 +29,45 @@ namespace DestructionXNA
 
             physicsObject = new PhysicsObject();
             physicsObject.CreateBox(position, orientation, length);
+            physicsObject.Body.AllowFreezing = false;
         }
 
         public override void Update(GameTime gameTime)
         {
-            if (game.InputState.IsTrigger(Keys.Space)) {
-                physicsObject.Body.MoveTo(new Vector3(0, 1, 0), orientation);
+            Matrix rotationMatrix = Matrix.Identity;
+            Vector3 moveVector = Vector3.Zero; //new Vector3(0, 0, 0.01f);
+            if (game.InputState.IsDown(Keys.Left))
+            {
+                moveVector = new Vector3(0, 0, 0.1f);
+                rotationMatrix = Matrix.CreateRotationY(MathHelper.ToRadians(5));
+            }
+            else if (game.InputState.IsDown(Keys.Right)) {
+                moveVector = new Vector3(0, 0, 0.1f);
+                rotationMatrix = Matrix.CreateRotationY(-MathHelper.ToRadians(5));
+            }
+            else if (game.InputState.IsDown(Keys.Up))
+            {
+                moveVector = new Vector3(0, 0, 0.1f);
+            }
+            else if (game.InputState.IsDown(Keys.Down))
+            {
+                rotationMatrix = Matrix.CreateRotationX(-MathHelper.ToRadians(10));
+            }
+
+            if (game.InputState.IsTrigger(Keys.Space))
+            {
+                physicsObject.Body.ApplyWorldImpulse(new Vector3(0, 0.025f, 0));
             }
 
 
+            physicsObject.Body.Orientation = rotationMatrix * physicsObject.Body.Orientation;
+            moveVector = Vector3.Transform(moveVector, physicsObject.Body.Orientation);
+            moveVector.Y = 0;
+            physicsObject.Body.Velocity += moveVector;
+
             this.position = physicsObject.Body.Position;
             this.orientation = physicsObject.Body.Orientation;
+
             base.Update(gameTime);
         }
 
