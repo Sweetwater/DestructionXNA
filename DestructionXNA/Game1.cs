@@ -69,6 +69,8 @@ namespace DestructionXNA
 
         Random random;
 
+        PhysicsSystem physicSystem;
+
         NicoNicoTVChan nicoTVChan;
         Floor floor;
 
@@ -88,7 +90,7 @@ namespace DestructionXNA
             random = new Random();
             inputState = new InputState();
 
-            //InitializePhysicsSystem();
+            CreatePhysicsSystem();
 
             //CreateContext();
         }
@@ -101,18 +103,20 @@ namespace DestructionXNA
         //    //Components.Add(context.DebugDrawer);
         //}
 
-        //private void InitializePhysicsSystem()
-        //{
-        //    physicSystem.CollisionSystem = new CollisionSystemSAP();
+        private void CreatePhysicsSystem()
+        {
+            physicSystem = new PhysicsSystem();
+            physicSystem.CollisionSystem = new CollisionSystemSAP();
 
-        //    physicSystem.EnableFreezing = true;
-        //    physicSystem.SolverType = PhysicsSystem.Solver.Normal;
-        //    physicSystem.CollisionSystem.UseSweepTests = true;
+            physicSystem.EnableFreezing = true;
+            physicSystem.SolverType = PhysicsSystem.Solver.Normal;
+            physicSystem.CollisionSystem.UseSweepTests = true;
 
-        //    physicSystem.NumCollisionIterations = 10;
-        //    physicSystem.NumContactIterations = 10;
-        //    physicSystem.NumPenetrationRelaxtionTimesteps = 15;
-        //}
+            physicSystem.NumCollisionIterations = 10;
+            physicSystem.NumContactIterations = 10;
+            physicSystem.NumPenetrationRelaxtionTimesteps = 15;
+            physicSystem.Gravity = new Vector3(0, -9.8f, 0);
+        }
 
         private float GetRandom(float min, float max)
         {
@@ -235,10 +239,9 @@ namespace DestructionXNA
 
             //HandleInput();
 
-            //physicSystem.Integrate((float)gameTime.ElapsedGameTime.TotalSeconds);
+            physicSystem.Integrate((float)gameTime.ElapsedGameTime.TotalSeconds);
 
             base.Update(gameTime);
-            Debug.WriteLine("Update");
         }
 
         /// <summary>
@@ -247,7 +250,6 @@ namespace DestructionXNA
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Draw(GameTime gameTime)
         {
-            Debug.WriteLine("Game.Draw");
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
             // TODO: Add your drawing code here
