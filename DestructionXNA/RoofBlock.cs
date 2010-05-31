@@ -13,6 +13,7 @@ namespace DestructionXNA
     {
         Vector3 size = new Vector3(12, 10, 12);
 
+        // コリジョンを複数しようすると重心がずれるが
         // 値を算出する方法が無いため実際に地面において
         // デバッガで高さを取得して設定する
         Vector3 offset = new Vector3(0, 2.605246538f, 0);
@@ -30,6 +31,8 @@ namespace DestructionXNA
             int splitNum = 10;
             Box[] boxes = new Box[splitNum];
 
+            // 頂点の大きさがゼロにならないよう
+            // 頂点少し下を基準にする
             float height = size.Y - 1;
             float splitHeight = height / splitNum;
             float positionY = splitHeight / 2;
