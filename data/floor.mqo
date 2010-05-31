@@ -4,14 +4,14 @@ Format Text Ver 1.0
 Scene {
 	pos 0.0000 0.0000 1500.0000
 	lookat 0.0000 0.0000 0.0000
-	head -6.3136
-	pich 1.5708
+	head -6.7636
+	pich 1.2208
 	ortho 0
-	zoom2 881.1832
+	zoom2 1409.8937
 	amb 0.250 0.250 0.250
 }
 Material 2 {
-	"mat1" col(1.000 1.000 1.000 1.000) dif(0.800) amb(0.600) emi(0.310) spc(0.000) power(38.00) tex("C:\Documents and Settings\cattiue\デスクトップ\data\floor64x64.bmp") proj_type(1) proj_pos(0.500 0.000 0.500) proj_scale(0.500 0.500 0.500) proj_angle(0.000 90.000 0.000)
+	"mat1" col(1.000 1.000 1.000 1.000) dif(0.800) amb(0.600) emi(0.310) spc(0.000) power(38.00) tex("C:\Documents and Settings\cattiue\My Documents\Visual Studio 2008\Projects\DestructionXNA\data\floor64x64.bmp") proj_type(1) proj_pos(0.500 0.000 0.500) proj_scale(0.500 0.500 0.500) proj_angle(0.000 90.000 0.000)
 	"mat2" col(0.180 1.000 0.000 1.000) dif(1.000) amb(1.000) emi(1.000) spc(0.000) power(12.00)
 }
 Object "obj1" {

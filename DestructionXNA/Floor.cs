@@ -26,6 +26,7 @@ namespace DestructionXNA
             this.model = model;
 
             this.physicsObject = new PhysicsObject();
+            this.physicsObject.SetCreateProperty(1.0f, 0.2f, 0.7f, 0.6f);
             this.physicsObject.CreatePlane(Vector3.Up, 0);
             this.physicsObject.Body.Immovable = true;
         }

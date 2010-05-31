@@ -85,17 +85,21 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BaseBlock.cs" />
     <Compile Include="BoxObject.cs" />
     <Compile Include="Camera.cs" />
     <Compile Include="DebugDrawer.cs" />
     <Compile Include="InputState.cs" />
     <Compile Include="NicoNicoTVChan.cs" />
+    <Compile Include="WallBlock.cs" />
     <Compile Include="___PhysicObject.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Game1.cs" />
     <Compile Include="Floor.cs" />
     <Compile Include="PhysicsObject.cs" />
+    <Compile Include="HalfWallBlock.cs" />
+    <Compile Include="RoofBlock.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Game.ico" />

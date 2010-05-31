@@ -17,19 +17,17 @@ namespace DestructionXNA
 
         private PhysicsObject physicsObject;
 
-
-        private Vector3 position = new Vector3(0, 0.2f, 0);
-        private Matrix orientation = Matrix.Identity;
-
-        private Vector3 length = new Vector3(0.264f, 0.23f, 0.16f);
+        private Vector3 length = new Vector3(2.64f, 2.3f, 1.6f);
 
         public NicoNicoTVChan(Game1 game, Model model) : base(game) {
             this.game = game;
             this.model = model;
 
-            physicsObject = new PhysicsObject();
-            physicsObject.CreateBox(position, orientation, length);
-            physicsObject.Body.AllowFreezing = false;
+            this.physicsObject = new PhysicsObject();
+            PhysicsObject po = this.physicsObject;
+            po.SetCreateProperty(1.0f, po.Elasticity, po.StaticRoughness, po.DynamicRoughness);
+            po.CreateBox(Vector3.Zero, Matrix.Identity, length);
+            po.Body.AllowFreezing = false;
         }
 
         public override void Update(GameTime gameTime)
@@ -38,16 +36,16 @@ namespace DestructionXNA
             Vector3 moveVector = Vector3.Zero; //new Vector3(0, 0, 0.01f);
             if (game.InputState.IsDown(Keys.Left))
             {
-                moveVector = new Vector3(0, 0, 0.1f);
+                moveVector = new Vector3(0, 0, 0.5f);
                 rotationMatrix = Matrix.CreateRotationY(MathHelper.ToRadians(5));
             }
             else if (game.InputState.IsDown(Keys.Right)) {
-                moveVector = new Vector3(0, 0, 0.1f);
+                moveVector = new Vector3(0, 0, 0.5f);
                 rotationMatrix = Matrix.CreateRotationY(-MathHelper.ToRadians(5));
             }
             else if (game.InputState.IsDown(Keys.Up))
             {
-                moveVector = new Vector3(0, 0, 0.1f);
+                moveVector = new Vector3(0, 0, 0.5f);
             }
             else if (game.InputState.IsDown(Keys.Down))
             {
@@ -56,7 +54,7 @@ namespace DestructionXNA
 
             if (game.InputState.IsTrigger(Keys.Space))
             {
-                physicsObject.Body.ApplyWorldImpulse(new Vector3(0, 0.025f, 0));
+                physicsObject.Body.ApplyWorldImpulse(new Vector3(0, 100f, 0));
             }
 
 
@@ -65,16 +63,13 @@ namespace DestructionXNA
             moveVector.Y = 0;
             physicsObject.Body.Velocity += moveVector;
 
-            this.position = physicsObject.Body.Position;
-            this.orientation = physicsObject.Body.Orientation;
-
             base.Update(gameTime);
         }
 
         public override void Draw(GameTime gameTime)
         {
-            Matrix matrix = this.orientation;
-            matrix.Translation = this.position;
+            Matrix matrix = physicsObject.Body.Orientation;
+            matrix.Translation = physicsObject.Body.Position;
                 
             game.DrawModel(model, matrix);
 

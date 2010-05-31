@@ -24,6 +24,13 @@ namespace DestructionXNA
     /// </summary>
     public class Game1 : Microsoft.Xna.Framework.Game
     {
+        enum State {
+            Pause,
+            Play,
+        }
+
+        State state;
+
         GraphicsDeviceManager graphics;
 
         SpriteBatch spriteBatch;
@@ -45,6 +52,12 @@ namespace DestructionXNA
         }
 
         private Vector3 cameraPosition;
+
+
+        private DebugDrawer debugDrawer;
+        public DebugDrawer DebugDrawer {
+            get { return debugDrawer; }
+        }
 
         DebugWindow debugWindow;
         public DebugWindow DebugWindow
@@ -74,6 +87,17 @@ namespace DestructionXNA
         NicoNicoTVChan nicoTVChan;
         Floor floor;
 
+        WallBlock wallBlock;
+        HalfWallBlock halfWallBlock;
+        RoofBlock roofBlock;
+
+
+        Model nicoTVchanModel;
+        Model floorModel;
+        Model wallBlockModel;
+        Model halfWallBlockModel;
+        Model roofBlockModel;
+
         public Game1()
         {
             graphics = new GraphicsDeviceManager(this);
@@ -81,10 +105,6 @@ namespace DestructionXNA
             graphics.PreferredBackBufferWidth = ScreenWidth;
             graphics.PreferredBackBufferHeight = ScreenHeight;
 
-            //graphics.PreferMultiSampling = false;
-
-            //TargetElapsedTime = new TimeSpan(0, 0, 0, 0, 10);
-            //IsFixedTimeStep = true;
             IsMouseVisible = true;
 
             random = new Random();
@@ -92,7 +112,14 @@ namespace DestructionXNA
 
             CreatePhysicsSystem();
 
+            cameraPosition = new Vector3(0, 10, 30);
+            UpdateViewMatrix();
+
+            debugDrawer = new DebugDrawer(this);
+            Components.Add(debugDrawer);
+            
             //CreateContext();
+            state = State.Pause;
         }
 
         //private void CreateContext()
@@ -133,6 +160,15 @@ namespace DestructionXNA
         {
             // TODO: Add your initialization logic here
 
+            float viewWidth = GraphicsDevice.Viewport.Width;
+            float viewHeight = GraphicsDevice.Viewport.Height;
+            float aspectRatio = viewWidth / viewHeight;
+            projection = Matrix.CreatePerspectiveFieldOfView(
+                MathHelper.ToRadians(45.0f),
+                aspectRatio,
+                0.005f,
+                1000.0f);
+
 #if DEBUG && DEBUG_WINDOW
             debugWindow = new DebugWindow();
             debugWindow.Show();
@@ -151,27 +187,45 @@ namespace DestructionXNA
             spriteBatch = new SpriteBatch(GraphicsDevice);
 
             // TODO: use this.Content to load your game content here
-            float viewWidth = GraphicsDevice.Viewport.Width;
-            float viewHeight = GraphicsDevice.Viewport.Height;
-            float aspectRatio = viewWidth / viewHeight;
-            projection = Matrix.CreatePerspectiveFieldOfView(
-                MathHelper.ToRadians(45.0f),
-                aspectRatio,
-                0.005f,
-                1000.0f);
+            this.nicoTVchanModel = Content.Load<Model>("niconicoTVChan");
+            this.floorModel = Content.Load<Model>("floor");
+            this.wallBlockModel = Content.Load<Model>("wall");
+            this.halfWallBlockModel = Content.Load<Model>("halfWall");
+            this.roofBlockModel = Content.Load<Model>("roof");
 
-            cameraPosition = new Vector3(0, 1, 3);
-            UpdateViewMatrix();
+            Reset();
+        }
 
-            //this.nicoTVChan = new NicoNicoTVChan(this, Content.Load<Model>("niconicoTVChan"));
-            this.nicoTVChan = new NicoNicoTVChan(this, Content.Load<Model>("niconicoTVChan"));
+        private void Reset() {
+            Destroy();
+
+            this.Components.Add(debugDrawer);
+
+            this.nicoTVChan = new NicoNicoTVChan(this, nicoTVchanModel);
             this.Components.Add(nicoTVChan);
 
-            this.floor = new Floor(this, Content.Load<Model>("floor"));
+            this.floor = new Floor(this, floorModel);
             this.Components.Add(floor);
 
-            //InitializeScene();
-            //AddCrate();
+            this.wallBlock = new WallBlock(this, wallBlockModel);
+            this.wallBlock.Position = new Vector3(12.5f, 2.5f, 0);
+            this.Components.Add(wallBlock);
+
+            this.halfWallBlock = new HalfWallBlock(this, halfWallBlockModel);
+            this.halfWallBlock.Position = new Vector3(-11.25f, 2.5f, 0);
+            this.Components.Add(halfWallBlock);
+
+            this.roofBlock = new RoofBlock(this, roofBlockModel);
+            this.roofBlock.Position = new Vector3(0, 20.0f, 0);
+            this.roofBlock.Orientation = Matrix.CreateRotationZ(MathHelper.ToRadians(90));
+            this.Components.Add(roofBlock);
+
+            state = State.Pause;
+        }
+
+        private void Destroy()
+        {
+            this.Components.Clear();
         }
 
         private void UpdateViewMatrix()
@@ -201,7 +255,8 @@ namespace DestructionXNA
             inputState.Update();
 
             // Allows the game to exit
-            if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed)
+            if (InputState.IsDown(Keys.Escape) ||
+                GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed)
                 this.Exit();
 
             // TODO: Add your update logic here
@@ -217,7 +272,7 @@ namespace DestructionXNA
                 }
             }
 #endif
-            Vector3 cameraMove = new Vector3(0.01f, 0.01f, 0.01f);
+            Vector3 cameraMove = new Vector3(0.1f, 0.1f, 0.1f);
 
             if (inputState.IsDown(Keys.LeftShift) ||
                 inputState.IsDown(Keys.RightShift))
@@ -229,17 +284,33 @@ namespace DestructionXNA
                 if (inputState.IsDown(Keys.Z)) cameraPosition.Z -= cameraMove.Z;
                 if (inputState.IsDown(Keys.X)) cameraPosition.Z += cameraMove.Z;
 
-                if (inputState.IsDown(Keys.D1)) cameraPosition = new Vector3(0, 0, 3);
-                if (inputState.IsDown(Keys.D2)) cameraPosition = new Vector3(3, 0, 0);
-                if (inputState.IsDown(Keys.D3)) cameraPosition = new Vector3(0, 3, 0.01f);
+                if (inputState.IsDown(Keys.D1)) cameraPosition = new Vector3(0, 10, 30);
+                if (inputState.IsDown(Keys.D2)) cameraPosition = new Vector3(30, 0, 0);
+                if (inputState.IsDown(Keys.D3)) cameraPosition = new Vector3(0, 30, 0.01f);
 
                 UpdateViewMatrix();
             }
 
+            debugDrawer.Enabled = InputState.IsDown(Keys.C);
 
-            //HandleInput();
 
-            physicSystem.Integrate((float)gameTime.ElapsedGameTime.TotalSeconds);
+            switch (state)
+            {
+                case State.Pause:
+                    if (inputState.IsTrigger(Keys.Enter)) {
+                        state = State.Play;
+                    }
+                    break;
+                case State.Play:
+                    if (inputState.IsTrigger(Keys.Back))
+                    {
+                        Reset();
+                    }
+                    physicSystem.Integrate((float)gameTime.ElapsedGameTime.TotalSeconds);
+                    break;
+                default:
+                    break;
+            }
 
             base.Update(gameTime);
         }
@@ -421,7 +492,7 @@ namespace DestructionXNA
 
     //    public SampleController(Body body, Vector3 force, Vector3 torque)
     //    {
-    //        this.body = body;
+    //      7  this.body = body;
     //        this.force = force;
     //        this.torque = torque;
     //    }
