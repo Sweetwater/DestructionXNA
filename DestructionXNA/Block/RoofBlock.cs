@@ -7,7 +7,7 @@ using Microsoft.Xna.Framework;
 using JigLibX.Geometry;
 using Microsoft.Xna.Framework.Input;
 
-namespace DestructionXNA
+namespace DestructionXNA.Block
 {
     class RoofBlock : BaseBlock
     {
@@ -18,7 +18,7 @@ namespace DestructionXNA
         // デバッガで高さを取得して設定する
         Vector3 offset = new Vector3(0, 2.605246538f, 0);
 
-        public RoofBlock(Game1 game, Model model) :
+        public RoofBlock(DestructionXNA game, Model model) :
             base(game, model, BlockType.Roof) {
         }
 

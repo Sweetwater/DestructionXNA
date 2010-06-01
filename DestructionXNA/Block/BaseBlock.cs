@@ -5,7 +5,7 @@ using System.Text;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework;
 
-namespace DestructionXNA
+namespace DestructionXNA.Block
 {
     abstract class BaseBlock : DrawableGameComponent
     {
@@ -16,7 +16,7 @@ namespace DestructionXNA
             Door,
         }
 
-        protected Game1 game;
+        protected DestructionXNA game;
         protected Model model;
 
         protected PhysicsObject physicsObject;
@@ -39,7 +39,7 @@ namespace DestructionXNA
             set { physicsObject.Body.MoveTo(physicsObject.Body.Position, value); }
         }
 
-        public BaseBlock(Game1 game, Model model, BlockType type) : base(game) {
+        public BaseBlock(DestructionXNA game, Model model, BlockType type) : base(game) {
             this.game = game;
             this.model = model;
             this.type = type;

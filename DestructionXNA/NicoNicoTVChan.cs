@@ -12,14 +12,14 @@ namespace DestructionXNA
 {
     class NicoNicoTVChan : DrawableGameComponent
     {
-        private Game1 game;
+        private DestructionXNA game;
         private Model model;
 
         private PhysicsObject physicsObject;
 
         private Vector3 length = new Vector3(2.64f, 2.3f, 1.6f);
 
-        public NicoNicoTVChan(Game1 game, Model model) : base(game) {
+        public NicoNicoTVChan(DestructionXNA game, Model model) : base(game) {
             this.game = game;
             this.model = model;
 

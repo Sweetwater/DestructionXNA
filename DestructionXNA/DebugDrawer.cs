@@ -1,10 +1,8 @@
-using System;
 using System.Collections.Generic;
-using System.Text;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using JigLibX.Collision;
 using JigLibX.Physics;
+
 
 
 namespace DestructionXNA
@@ -14,9 +12,9 @@ namespace DestructionXNA
         BasicEffect basicEffect;
         List<VertexPositionColor> vertexData;
 
-        Game1 game;
+        DestructionXNA game;
 
-        public DebugDrawer(Game1 game)
+        public DebugDrawer(DestructionXNA game)
             : base(game)
         {
             this.game = game;

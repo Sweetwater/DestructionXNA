@@ -5,21 +5,21 @@ using System.Text;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework;
 
-namespace DestructionXNA
+namespace DestructionXNA.Block
 {
-    class WallBlock : BaseBlock
+    class HalfWallBlock : BaseBlock
     {
-        private Vector3 length = new Vector3(5f, 5f, 1f);
+        private Vector3 length = new Vector3(2.5f, 5f, 1f);
 
-        public WallBlock(Game1 game, Model model) :
-            base(game, model, BlockType.Wall) {
+        public HalfWallBlock(DestructionXNA game, Model model) :
+            base(game, model, BlockType.HalfWall) {
         }
 
         protected override void CreatePhysicsBody()
         {
             PhysicsObject po = physicsObject;
 
-            po.SetCreateProperty(2.0f, po.Elasticity, po.StaticRoughness, po.DynamicRoughness);
+            po.SetCreateProperty(1.0f, po.Elasticity, po.StaticRoughness, po.DynamicRoughness);
             po.CreateBox(Vector3.Zero, Matrix.Identity, length);
         }
     }

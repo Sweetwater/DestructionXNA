@@ -1,28 +1,20 @@
 //#define DEBUG_WINDOW
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Audio;
-using Microsoft.Xna.Framework.Content;
-using Microsoft.Xna.Framework.GamerServices;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
-using Microsoft.Xna.Framework.Media;
-using Microsoft.Xna.Framework.Net;
-using Microsoft.Xna.Framework.Storage;
 using DebugTool;
 using JigLibX.Physics;
 using JigLibX.Collision;
-using System.Diagnostics;
+using DestructionXNA.Block;
 
 namespace DestructionXNA
 {
     /// <summary>
     /// This is the main type for your game
     /// </summary>
-    public class Game1 : Microsoft.Xna.Framework.Game
+    public class DestructionXNA : Microsoft.Xna.Framework.Game
     {
         enum State {
             Pause,
@@ -98,7 +90,7 @@ namespace DestructionXNA
         Model halfWallBlockModel;
         Model roofBlockModel;
 
-        public Game1()
+        public DestructionXNA()
         {
             graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";

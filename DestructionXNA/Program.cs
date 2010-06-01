@@ -1,6 +1,6 @@
 using System;
 
-namespace DestructionXNA
+namespace DestructionXNA.Block
 {
     static class Program
     {
@@ -9,7 +9,7 @@ namespace DestructionXNA
         /// </summary>
         static void Main(string[] args)
         {
-            using (Game1 game = new Game1())
+            using (DestructionXNA game = new DestructionXNA())
             {
                 game.Run();
             }

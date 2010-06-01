@@ -14,12 +14,12 @@ namespace DestructionXNA
 {
     class Floor : DrawableGameComponent
     {
-        private Game1 game;
+        private DestructionXNA game;
         private Model model;
 
         private PhysicsObject physicsObject;
 
-        public Floor(Game1 game, Model model)
+        public Floor(DestructionXNA game, Model model)
             : base(game)
         {
             this.game = game;
