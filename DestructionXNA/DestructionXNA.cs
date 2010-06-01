@@ -85,12 +85,12 @@ namespace DestructionXNA
         DoorBlock doorBlock;
 
 
-        Model nicoTVchanModel;
-        Model floorModel;
-        Model wallBlockModel;
-        Model halfWallBlockModel;
-        Model roofBlockModel;
-        Model doorBlockModel;
+        public Model nicoTVchanModel;
+        public Model floorModel;
+        public Model wallBlockModel;
+        public Model halfWallBlockModel;
+        public Model roofBlockModel;
+        public Model doorBlockModel;
 
         public DestructionXNA()
         {
@@ -197,27 +197,31 @@ namespace DestructionXNA
             this.Components.Add(debugDrawer);
 
             this.nicoTVChan = new NicoNicoTVChan(this, nicoTVchanModel);
+            this.nicoTVChan.Position = new Vector3(0, 3, 0);
             this.Components.Add(nicoTVChan);
 
             this.floor = new Floor(this, floorModel);
             this.Components.Add(floor);
 
-            this.wallBlock = new WallBlock(this, wallBlockModel);
-            this.wallBlock.Position = new Vector3(12.5f, 2.5f, 0);
-            this.Components.Add(wallBlock);
+            //this.wallBlock = new WallBlock(this, wallBlockModel);
+            //this.wallBlock.Position = new Vector3(12.5f, 2.5f, 0);
+            //this.Components.Add(wallBlock);
 
-            this.halfWallBlock = new HalfWallBlock(this, halfWallBlockModel);
-            this.halfWallBlock.Position = new Vector3(-11.25f, 2.5f, 0);
-            this.Components.Add(halfWallBlock);
+            //this.halfWallBlock = new HalfWallBlock(this, halfWallBlockModel);
+            //this.halfWallBlock.Position = new Vector3(-11.25f, 2.5f, 0);
+            //this.Components.Add(halfWallBlock);
 
-            this.roofBlock = new RoofBlock(this, roofBlockModel);
-            this.roofBlock.Position = new Vector3(0, 5.0f, -10);
+            //this.roofBlock = new RoofBlock(this, roofBlockModel);
+            //this.roofBlock.Position = new Vector3(0, 10.0f, -10);
             //this.roofBlock.Orientation = Matrix.CreateRotationZ(MathHelper.ToRadians(90));
-            this.Components.Add(roofBlock);
+            //this.Components.Add(roofBlock);
 
-            this.doorBlock = new DoorBlock(this, doorBlockModel);
-            this.doorBlock.Position = new Vector3(0, 5, 10);
-            this.Components.Add(doorBlock);
+            //this.doorBlock = new DoorBlock(this, doorBlockModel);
+            //this.doorBlock.Position = new Vector3(0, 5, 10);
+            //this.Components.Add(doorBlock);
+
+            HouseBuilder.Build(this);
+
 
             state = State.Pause;
         }

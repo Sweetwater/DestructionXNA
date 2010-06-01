@@ -19,13 +19,17 @@ namespace DestructionXNA
 
         private Vector3 length = new Vector3(2.64f, 2.3f, 1.6f);
 
+        public Vector3 Position {
+            set { physicsObject.Body.Position = value; }
+        }
+
         public NicoNicoTVChan(DestructionXNA game, Model model) : base(game) {
             this.game = game;
             this.model = model;
 
             this.physicsObject = new PhysicsObject();
             PhysicsObject po = this.physicsObject;
-            po.SetCreateProperty(1.0f, po.Elasticity, po.StaticRoughness, po.DynamicRoughness);
+            po.SetCreateProperty(10.0f, po.Elasticity, po.StaticRoughness, po.DynamicRoughness);
             po.CreateBox(Vector3.Zero, Matrix.Identity, length);
             po.Body.AllowFreezing = false;
         }

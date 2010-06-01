@@ -27,21 +27,26 @@ namespace DestructionXNA.Block
             get { return type; }
         }
 
+        protected Vector3 positionOffset;
+        public Vector3 PositionOffset
+        {
+            get { return positionOffset; }
+        }
+
         public Vector3 Position
         {
             get { return physicsObject.Body.Position + positionOffset; }
             set { physicsObject.Body.MoveTo(value - positionOffset, physicsObject.Body.Orientation); }
         }
 
-        protected Vector3 positionOffset;
-        public Vector3 PositionOffset {
-            get { return positionOffset; }
-        }
-
         public Matrix Orientation
         {
             get { return physicsObject.Body.Orientation; }
             set { physicsObject.Body.MoveTo(physicsObject.Body.Position, value); }
+        }
+
+        public void MoveTo(Vector3 position, Matrix orientation) {
+            physicsObject.Body.MoveTo(position - positionOffset, orientation);
         }
 
         public BaseBlock(DestructionXNA game, Model model, BlockType type) : base(game) {

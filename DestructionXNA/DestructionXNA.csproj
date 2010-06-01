@@ -90,6 +90,7 @@
     <Compile Include="BoxObject.cs" />
     <Compile Include="Camera.cs" />
     <Compile Include="DebugDrawer.cs" />
+    <Compile Include="HouseBuilder.cs" />
     <Compile Include="InputState.cs" />
     <Compile Include="NicoNicoTVChan.cs" />
     <Compile Include="Block\WallBlock.cs" />
