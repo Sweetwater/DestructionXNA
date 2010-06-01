@@ -20,6 +20,8 @@ namespace DestructionXNA.Block
 
         public RoofBlock(DestructionXNA game, Model model) :
             base(game, model, BlockType.Roof) {
+
+            positionOffset = offset;
         }
 
         protected override void CreatePhysicsBody()
@@ -54,18 +56,6 @@ namespace DestructionXNA.Block
             }
 
             po.CreateBoxes(Vector3.Zero, Matrix.Identity, boxes);
-        }
-
-        public override void Draw(GameTime gameTime)
-        {
-            Matrix matrix = Matrix.Identity;
-            matrix.Translation += offset;
-            matrix *= this.physicsObject.Body.Orientation;
-            matrix.Translation += this.physicsObject.Body.Position;
-
-            game.DrawModel(model, matrix);
-
-            game.DebugDrawer.Draw(physicsObject);
         }
     }
 }

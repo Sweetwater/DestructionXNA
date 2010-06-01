@@ -29,8 +29,13 @@ namespace DestructionXNA.Block
 
         public Vector3 Position
         {
-            get { return physicsObject.Body.Position; }
-            set { physicsObject.Body.MoveTo(value, physicsObject.Body.Orientation); }
+            get { return physicsObject.Body.Position + positionOffset; }
+            set { physicsObject.Body.MoveTo(value - positionOffset, physicsObject.Body.Orientation); }
+        }
+
+        protected Vector3 positionOffset;
+        public Vector3 PositionOffset {
+            get { return positionOffset; }
         }
 
         public Matrix Orientation
@@ -59,8 +64,9 @@ namespace DestructionXNA.Block
         public override void Draw(GameTime gameTime)
         {
             Matrix matrix = Matrix.Identity;
+            matrix.Translation += positionOffset;
             matrix *= this.physicsObject.Body.Orientation;
-            matrix.Translation = this.physicsObject.Body.Position;
+            matrix.Translation += this.physicsObject.Body.Position;
 
             game.DrawModel(model, matrix);
 

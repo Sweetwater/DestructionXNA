@@ -86,6 +86,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Block\BaseBlock.cs" />
+    <Compile Include="Block\DoorBlock.cs" />
     <Compile Include="BoxObject.cs" />
     <Compile Include="Camera.cs" />
     <Compile Include="DebugDrawer.cs" />

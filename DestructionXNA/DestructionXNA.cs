@@ -82,6 +82,7 @@ namespace DestructionXNA
         WallBlock wallBlock;
         HalfWallBlock halfWallBlock;
         RoofBlock roofBlock;
+        DoorBlock doorBlock;
 
 
         Model nicoTVchanModel;
@@ -89,6 +90,7 @@ namespace DestructionXNA
         Model wallBlockModel;
         Model halfWallBlockModel;
         Model roofBlockModel;
+        Model doorBlockModel;
 
         public DestructionXNA()
         {
@@ -184,6 +186,7 @@ namespace DestructionXNA
             this.wallBlockModel = Content.Load<Model>("wall");
             this.halfWallBlockModel = Content.Load<Model>("halfWall");
             this.roofBlockModel = Content.Load<Model>("roof");
+            this.doorBlockModel = Content.Load<Model>("door");
 
             Reset();
         }
@@ -208,9 +211,13 @@ namespace DestructionXNA
             this.Components.Add(halfWallBlock);
 
             this.roofBlock = new RoofBlock(this, roofBlockModel);
-            this.roofBlock.Position = new Vector3(0, 20.0f, 0);
-            this.roofBlock.Orientation = Matrix.CreateRotationZ(MathHelper.ToRadians(90));
+            this.roofBlock.Position = new Vector3(0, 5.0f, -10);
+            //this.roofBlock.Orientation = Matrix.CreateRotationZ(MathHelper.ToRadians(90));
             this.Components.Add(roofBlock);
+
+            this.doorBlock = new DoorBlock(this, doorBlockModel);
+            this.doorBlock.Position = new Vector3(0, 5, 10);
+            this.Components.Add(doorBlock);
 
             state = State.Pause;
         }
@@ -279,6 +286,7 @@ namespace DestructionXNA
                 if (inputState.IsDown(Keys.D1)) cameraPosition = new Vector3(0, 10, 30);
                 if (inputState.IsDown(Keys.D2)) cameraPosition = new Vector3(30, 0, 0);
                 if (inputState.IsDown(Keys.D3)) cameraPosition = new Vector3(0, 30, 0.01f);
+                if (inputState.IsDown(Keys.D4)) cameraPosition = new Vector3(0, 100, 100);
 
                 UpdateViewMatrix();
             }
