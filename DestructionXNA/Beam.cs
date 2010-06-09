@@ -15,6 +15,7 @@ namespace DestructionXNA.Block
 
         private PhysicsObject physicsObject;
 
+        private Vector3 moveVelocity = new Vector3(0, 0, 10);
         private Vector3 length = new Vector3(1, 1, 2);
         private Vector3 velocity;
 
@@ -39,17 +40,12 @@ namespace DestructionXNA.Block
             orientatation.Translation = Vector3.Zero;
 
             this.physicsObject.Body.MoveTo(position, orientatation);
-
-            this.velocity = Vector3.Transform(new Vector3(0, 0, 10), orientatation);
-            
-            //this.physicsObject.Body.Orientation = matrix;
-            //this.physicsObject.Body.Position = matrix.Translation;
+            this.velocity = Vector3.Transform(moveVelocity, orientatation);
         }
 
         public override void Update(GameTime gameTime)
         {
-           //X  this.physicsObject.Body.Force = new Vector3(0, 0, 10000);
-           this.physicsObject.Body.Velocity = velocity;
+            this.physicsObject.Body.Velocity = velocity;
 
             base.Update(gameTime);
         }
@@ -59,11 +55,32 @@ namespace DestructionXNA.Block
             Matrix matrix = physicsObject.Body.Orientation;
             matrix.Translation = physicsObject.Body.Position;
 
-            game.DrawModel(model, matrix);
+            DrawModel(model, matrix);
 
             game.DebugDrawer.Draw(physicsObject);
 
             base.Draw(gameTime);
         }
+
+        public void DrawModel(Model model, Matrix world)
+        {
+            this.game.GraphicsDevice.RenderState.AlphaBlendEnable = true;
+            this.game.GraphicsDevice.RenderState.SourceBlend = Blend.SourceAlpha;
+            this.game.GraphicsDevice.RenderState.DestinationBlend = Blend.InverseSourceAlpha;
+            this.game.GraphicsDevice.RenderState.AlphaTestEnable = true;
+
+            foreach (ModelMesh mesh in model.Meshes)
+            {
+                foreach (BasicEffect effect in mesh.Effects)
+                {
+                    effect.EnableDefaultLighting();
+                    effect.World = world;
+                    effect.View = game.View;
+                    effect.Projection = game.Projection;
+                }
+                mesh.Draw();
+            }
+        }
+
     }
 }

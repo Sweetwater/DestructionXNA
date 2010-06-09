@@ -171,7 +171,6 @@ namespace DestructionXNA
             debugWindow = new DebugWindow();
             debugWindow.Show();
 #endif
-
             base.Initialize();
         }
 
@@ -191,7 +190,7 @@ namespace DestructionXNA
             this.halfWallBlockModel = Content.Load<Model>("halfWall");
             this.roofBlockModel = Content.Load<Model>("roof");
             this.doorBlockModel = Content.Load<Model>("door");
-            this.beamModel = Content.Load<Model>("beam");
+            this.beamModel = Content.Load<Model>("beam2");
 
             Reset();
         }
@@ -206,6 +205,7 @@ namespace DestructionXNA
             this.Components.Add(nicoTVChan);
 
             this.beam = new Beam(this, beamModel);
+            this.beam.DrawOrder = int.MaxValue;
             this.nicoTVChan.Beam = this.beam;
             this.Components.Add(this.beam);
 
@@ -232,7 +232,7 @@ namespace DestructionXNA
             //this.doorBlock.Position = new Vector3(0, 5, 10);
             //this.Components.Add(doorBlock);
 
-/*            HouseBuilder.Build(this); */
+/*            HouseBuilder.Build(this);*/
 
 
             state = State.Pause;
@@ -346,6 +346,12 @@ namespace DestructionXNA
 
         public void DrawModel(Model model, Matrix world)
         {
+
+            this.GraphicsDevice.RenderState.AlphaBlendEnable = true;
+            this.GraphicsDevice.RenderState.SourceBlend = Blend.SourceAlpha;
+            this.GraphicsDevice.RenderState.DestinationBlend = Blend.InverseSourceAlpha;
+            this.GraphicsDevice.RenderState.AlphaTestEnable = true;
+
             foreach (ModelMesh mesh in model.Meshes)
             {
                 foreach (BasicEffect effect in mesh.Effects)
