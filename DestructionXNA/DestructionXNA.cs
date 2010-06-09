@@ -77,6 +77,8 @@ namespace DestructionXNA
         PhysicsSystem physicSystem;
 
         NicoNicoTVChan nicoTVChan;
+        Beam beam;
+        BeamController baemController;
         Floor floor;
 
         WallBlock wallBlock;
@@ -91,6 +93,8 @@ namespace DestructionXNA
         public Model halfWallBlockModel;
         public Model roofBlockModel;
         public Model doorBlockModel;
+
+        public Model beamModel;
 
         public DestructionXNA()
         {
@@ -187,6 +191,7 @@ namespace DestructionXNA
             this.halfWallBlockModel = Content.Load<Model>("halfWall");
             this.roofBlockModel = Content.Load<Model>("roof");
             this.doorBlockModel = Content.Load<Model>("door");
+            this.beamModel = Content.Load<Model>("beam");
 
             Reset();
         }
@@ -199,6 +204,13 @@ namespace DestructionXNA
             this.nicoTVChan = new NicoNicoTVChan(this, nicoTVchanModel);
             this.nicoTVChan.Position = new Vector3(0, 3, 0);
             this.Components.Add(nicoTVChan);
+
+            this.beam = new Beam(this, beamModel);
+            this.nicoTVChan.Beam = this.beam;
+            this.Components.Add(this.beam);
+
+            this.baemController = new BeamController(beam);
+            this.baemController.EnableController();
 
             this.floor = new Floor(this, floorModel);
             this.Components.Add(floor);
@@ -220,7 +232,7 @@ namespace DestructionXNA
             //this.doorBlock.Position = new Vector3(0, 5, 10);
             //this.Components.Add(doorBlock);
 
-            HouseBuilder.Build(this);
+/*            HouseBuilder.Build(this); */
 
 
             state = State.Pause;

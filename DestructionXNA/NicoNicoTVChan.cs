@@ -7,6 +7,7 @@ using Microsoft.Xna.Framework;
 using System.Diagnostics;
 using Microsoft.Xna.Framework.Input;
 using JigLibX.Physics;
+using DestructionXNA.Block;
 
 namespace DestructionXNA
 {
@@ -22,6 +23,8 @@ namespace DestructionXNA
         public Vector3 Position {
             set { physicsObject.Body.Position = value; }
         }
+
+        public Beam Beam { get; set; }
 
         public NicoNicoTVChan(DestructionXNA game, Model model) : base(game) {
             this.game = game;
@@ -56,6 +59,17 @@ namespace DestructionXNA
                 rotationMatrix = Matrix.CreateRotationX(-MathHelper.ToRadians(10));
             }
 
+            if (game.InputState.IsTrigger(Keys.B))
+            {
+                Vector3 beamFirePos = new Vector3(0, 0, 2);
+
+                Matrix matrix = this.physicsObject.Body.Orientation;
+                matrix.Translation = Vector3.Transform(beamFirePos, matrix);
+                matrix.Translation += this.physicsObject.Body.Position;
+
+                Beam.Fire(matrix);
+            }
+
             if (game.InputState.IsTrigger(Keys.Space))
             {
                 physicsObject.Body.ApplyWorldImpulse(new Vector3(0, 100f, 0));
@@ -76,6 +90,8 @@ namespace DestructionXNA
             matrix.Translation = physicsObject.Body.Position;
                 
             game.DrawModel(model, matrix);
+
+            game.DebugDrawer.Draw(physicsObject);
 
             base.Draw(gameTime);
         }
