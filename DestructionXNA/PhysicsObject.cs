@@ -62,6 +62,18 @@ namespace DestructionXNA
             this.dynamicRoughness = dynamicRoughness;
         }
 
+        public void SetPrimitive(Primitive primitive, Vector3 position, Matrix orientation)
+        {
+            this.collisionSkin = new CollisionSkin(this.Body);
+
+            MaterialProperties materialProp = new MaterialProperties(
+                elasticity, staticRoughness, dynamicRoughness);
+
+            CollisionSkin.AddPrimitive(primitive, materialProp);
+
+            SetupProperty(position, orientation);
+        }
+
         public void CreateBox(Vector3 position, Matrix orientation, Vector3 length) {
             this.collisionSkin = new CollisionSkin(this.Body);
 

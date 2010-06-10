@@ -25,7 +25,7 @@ namespace DestructionXNA
         }
 
 
-        public static void Build(DestructionXNA game) {
+        public static void Build(DestructionXNA game, Vector3 basePositoin) {
             Layout[] layouts = {
                 // 1階
                 new Layout(-5.5f, 2.5f, 2.5f,  90, "wall"),
@@ -60,11 +60,13 @@ namespace DestructionXNA
                 new Layout(0, 15f, 0,  0, "roof"),
             };
 
+            basePositoin.Y = 0;
+
             BaseBlock[] blocks = new BaseBlock[layouts.Length];
 
             for (int i = 0; i < layouts.Length; i++)
             {
-                Vector3 position = layouts[i].position;
+                Vector3 position = layouts[i].position + basePositoin;
                 Matrix matrix = Matrix.CreateRotationY(layouts[i].rotationY);
 
                 switch (layouts[i].type)

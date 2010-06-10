@@ -95,6 +95,8 @@ namespace DestructionXNA
         public Model doorBlockModel;
 
         public Model beamModel;
+        public Texture2D beamTexture;
+
 
         public DestructionXNA()
         {
@@ -191,6 +193,7 @@ namespace DestructionXNA
             this.roofBlockModel = Content.Load<Model>("roof");
             this.doorBlockModel = Content.Load<Model>("door");
             this.beamModel = Content.Load<Model>("beam2");
+            this.beamTexture = Content.Load<Texture2D>("comment_m9_2");
 
             Reset();
         }
@@ -201,10 +204,10 @@ namespace DestructionXNA
             this.Components.Add(debugDrawer);
 
             this.nicoTVChan = new NicoNicoTVChan(this, nicoTVchanModel);
-            this.nicoTVChan.Position = new Vector3(0, 3, 0);
+            this.nicoTVChan.Position = new Vector3(-10, 2, 0);
             this.Components.Add(nicoTVChan);
 
-            this.beam = new Beam(this, beamModel);
+            this.beam = new Beam(this, beamTexture, beamModel);
             this.beam.DrawOrder = int.MaxValue;
             this.nicoTVChan.Beam = this.beam;
             this.Components.Add(this.beam);
@@ -232,7 +235,7 @@ namespace DestructionXNA
             //this.doorBlock.Position = new Vector3(0, 5, 10);
             //this.Components.Add(doorBlock);
 
-/*            HouseBuilder.Build(this);*/
+            HouseBuilder.Build(this, new Vector3(10, 0, 0));
 
 
             state = State.Pause;
@@ -292,12 +295,12 @@ namespace DestructionXNA
             if (inputState.IsDown(Keys.LeftShift) ||
                 inputState.IsDown(Keys.RightShift))
             {
-                if (inputState.IsDown(Keys.Left)) cameraPosition.X -= cameraMove.X;
-                if (inputState.IsDown(Keys.Right)) cameraPosition.X += cameraMove.X;
-                if (inputState.IsDown(Keys.Up)) cameraPosition.Y -= cameraMove.Y;
-                if (inputState.IsDown(Keys.Down)) cameraPosition.Y += cameraMove.Y;
-                if (inputState.IsDown(Keys.Z)) cameraPosition.Z -= cameraMove.Z;
-                if (inputState.IsDown(Keys.X)) cameraPosition.Z += cameraMove.Z;
+                if (inputState.IsDown(Keys.A)) cameraPosition.X -= cameraMove.X;
+                if (inputState.IsDown(Keys.D)) cameraPosition.X += cameraMove.X;
+                if (inputState.IsDown(Keys.Z)) cameraPosition.Y -= cameraMove.Y;
+                if (inputState.IsDown(Keys.X)) cameraPosition.Y += cameraMove.Y;
+                if (inputState.IsDown(Keys.W)) cameraPosition.Z -= cameraMove.Z;
+                if (inputState.IsDown(Keys.S)) cameraPosition.Z += cameraMove.Z;
 
                 if (inputState.IsDown(Keys.D1)) cameraPosition = new Vector3(0, 10, 30);
                 if (inputState.IsDown(Keys.D2)) cameraPosition = new Vector3(30, 0, 0);
@@ -350,7 +353,7 @@ namespace DestructionXNA
             this.GraphicsDevice.RenderState.AlphaBlendEnable = true;
             this.GraphicsDevice.RenderState.SourceBlend = Blend.SourceAlpha;
             this.GraphicsDevice.RenderState.DestinationBlend = Blend.InverseSourceAlpha;
-            this.GraphicsDevice.RenderState.AlphaTestEnable = true;
+            //this.GraphicsDevice.RenderState.AlphaTestEnable = true;
 
             foreach (ModelMesh mesh in model.Meshes)
             {
