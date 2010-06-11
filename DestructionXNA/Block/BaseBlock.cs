@@ -59,6 +59,18 @@ namespace DestructionXNA.Block
             physicsObject.Body.AllowFreezing = true;
         }
 
+        public void Enable()
+        {
+            this.physicsObject.Body.EnableBody();
+        }
+        public void Disable()
+        {
+            this.physicsObject.Body.DisableBody();
+        }
+        public Boolean IsEnabled {
+            get { return this.physicsObject.Body.IsBodyEnabled; }
+        }
+
         protected abstract void CreatePhysicsBody();
 
         public override void  Update(GameTime gameTime)
@@ -68,6 +80,8 @@ namespace DestructionXNA.Block
 
         public override void Draw(GameTime gameTime)
         {
+            if (this.physicsObject.Body.IsBodyEnabled == false) return;
+
             Matrix matrix = Matrix.Identity;
             matrix.Translation += positionOffset;
             matrix *= this.physicsObject.Body.Orientation;

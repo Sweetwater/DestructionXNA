@@ -73,6 +73,9 @@ namespace DestructionXNA
         }
 
         Random random;
+        public Random Random {
+            get { return random; }
+        }
 
         PhysicsSystem physicSystem;
 
@@ -80,6 +83,7 @@ namespace DestructionXNA
         Beam beam;
         BeamController baemController;
         Floor floor;
+        House house;
 
         WallBlock wallBlock;
         HalfWallBlock halfWallBlock;
@@ -218,6 +222,10 @@ namespace DestructionXNA
             this.floor = new Floor(this, floorModel);
             this.Components.Add(floor);
 
+            this.house = new House(this);
+            this.house.Build(new Vector3(10, 0, 0));
+            this.Components.Add(house);
+
             //this.wallBlock = new WallBlock(this, wallBlockModel);
             //this.wallBlock.Position = new Vector3(12.5f, 2.5f, 0);
             //this.Components.Add(wallBlock);
@@ -235,7 +243,7 @@ namespace DestructionXNA
             //this.doorBlock.Position = new Vector3(0, 5, 10);
             //this.Components.Add(doorBlock);
 
-            HouseBuilder.Build(this, new Vector3(10, 0, 0));
+            //HouseBuilder.Build(this, new Vector3(10, 0, 0));
 
 
             state = State.Pause;

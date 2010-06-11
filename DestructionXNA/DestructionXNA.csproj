@@ -105,6 +105,7 @@
     <Compile Include="PhysicsObject.cs" />
     <Compile Include="Block\HalfWallBlock.cs" />
     <Compile Include="Block\RoofBlock.cs" />
+    <Compile Include="House.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Game.ico" />
