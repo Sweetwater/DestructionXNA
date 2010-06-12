@@ -8,8 +8,9 @@ using JigLibX.Physics;
 using JigLibX.Collision;
 using JigLibX.Geometry;
 using JigLibX.Math;
+using DestructionXNA.Utility;
 
-namespace DestructionXNA.Block
+namespace DestructionXNA.Tvchan
 {
     class Beam : DrawableGameComponent
     {

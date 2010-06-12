@@ -9,8 +9,9 @@ using Microsoft.Xna.Framework.Input;
 using JigLibX.Physics;
 using DestructionXNA.Block;
 using JigLibX.Collision;
+using DestructionXNA.Utility;
 
-namespace DestructionXNA
+namespace DestructionXNA.Tvchan
 {
     class NicoNicoTVChan : DrawableGameComponent
     {
@@ -49,7 +50,7 @@ namespace DestructionXNA
         public override void Update(GameTime gameTime)
         {
             Matrix rotationMatrix = Matrix.Identity;
-            Vector3 moveVector = Vector3.Zero; //new Vector3(0, 0, 0.01f);
+            Vector3 moveVector = Vector3.Zero;
             if (game.InputState.IsDown(Keys.Left))
             {
                 moveVector = new Vector3(0, 0, 0.5f);

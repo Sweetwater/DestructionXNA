@@ -8,6 +8,9 @@ using DebugTool;
 using JigLibX.Physics;
 using JigLibX.Collision;
 using DestructionXNA.Block;
+using DestructionXNA.Camera;
+using DestructionXNA.Utility;
+using DestructionXNA.Tvchan;
 
 namespace DestructionXNA
 {
@@ -40,8 +43,8 @@ namespace DestructionXNA
             get { return camera.View; }
         }
 
-        private Camera camera;
-        private Camera[] staticCameras;
+        private BaseCamera camera;
+        private BaseCamera[] staticCameras;
 
         private DebugDrawer debugDrawer;
         public DebugDrawer DebugDrawer {
@@ -122,10 +125,10 @@ namespace DestructionXNA
                 new Vector3(0, 100, 100),
             };
 
-            this.staticCameras = new Camera[cameraPositions.Length];
+            this.staticCameras = new BaseCamera[cameraPositions.Length];
             for (int i = 0; i < staticCameras.Length; i++)
 			{
-                staticCameras[i] = new Camera(this);
+                staticCameras[i] = new BaseCamera(this);
                 staticCameras[i].Position = cameraPositions[i];
                 Components.Add(staticCameras[i]);
 			}

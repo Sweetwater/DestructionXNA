@@ -10,7 +10,7 @@ using JigLibX.Collision;
 using JigLibX.Geometry;
 using JigLibX.Math;
 
-namespace DestructionXNA
+namespace DestructionXNA.Utility
 {
     public class PhysicsObject
     {

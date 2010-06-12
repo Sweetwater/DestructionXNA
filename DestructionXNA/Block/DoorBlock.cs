@@ -6,6 +6,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework;
 using JigLibX.Geometry;
 using Microsoft.Xna.Framework.Input;
+using DestructionXNA.Utility;
 
 namespace DestructionXNA.Block
 {
@@ -45,32 +46,6 @@ namespace DestructionXNA.Block
 
             Box[] boxes = { leftPillar, rightPillar, TopBar };
             po.CreateBoxes(Vector3.Zero, Matrix.Identity, boxes);
-
-            //int splitNum = 10;
-            //Box[] boxes = new Box[splitNum];
-
-            //// 頂点の大きさがゼロにならないよう
-            //// 頂点少し下を基準にする
-            //float height = size.Y - 1;
-            //float splitHeight = height / splitNum;
-            //float positionY = splitHeight / 2;
-
-            //for (int i = 0; i < boxes.Length; i++)
-            //{
-            //    // 底辺:高さ = 頂点からの高さ:length という式を
-            //    // 解いてXとZの長さを算出する
-            //    float topDownward = size.Y - (splitHeight * (i + 1));
-            //    float lengthX = (topDownward * size.X) / size.Y;
-            //    float lengthZ = (topDownward * size.Z) / size.Y;
-
-            //    Vector3 position = new Vector3(-lengthX / 2, positionY, -lengthZ / 2);
-            //    Vector3 length = new Vector3(lengthX, splitHeight, lengthZ);
-
-            //    boxes[i] = new Box(position, Matrix.Identity, length);
-
-            //    positionY += splitHeight;
-            //}
-
         }
     }
 }

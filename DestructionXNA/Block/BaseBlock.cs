@@ -6,6 +6,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework;
 using JigLibX.Physics;
 using JigLibX.Collision;
+using DestructionXNA.Utility;
 
 namespace DestructionXNA.Block
 {

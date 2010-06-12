@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using Microsoft.Xna.Framework.Input;
 
-namespace DestructionXNA
+namespace DestructionXNA.Utility
 {
     public class InputState
     {

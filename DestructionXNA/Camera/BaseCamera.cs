@@ -5,9 +5,9 @@ using System.Text;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 
-namespace DestructionXNA.Block
+namespace DestructionXNA.Camera
 {
-    class Camera : GameComponent
+    class BaseCamera : GameComponent
     {
         protected DestructionXNA game;
 
@@ -41,7 +41,7 @@ namespace DestructionXNA.Block
         protected Vector3 refarence;
         protected Vector3 up = Vector3.Up;
 
-        public Camera(DestructionXNA game) : base(game)
+        public BaseCamera(DestructionXNA game) : base(game)
         {
             this.game = game;
             this.position = new Vector3(0, 10, 30);
