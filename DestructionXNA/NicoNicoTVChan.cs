@@ -8,6 +8,7 @@ using System.Diagnostics;
 using Microsoft.Xna.Framework.Input;
 using JigLibX.Physics;
 using DestructionXNA.Block;
+using JigLibX.Collision;
 
 namespace DestructionXNA
 {
@@ -17,6 +18,14 @@ namespace DestructionXNA
         private Model model;
 
         private PhysicsObject physicsObject;
+        public Body Body
+        {
+            get { return physicsObject.Body; }
+        }
+        public CollisionSkin CollisionSkin
+        {
+            get { return physicsObject.CollisionSkin; }
+        }
 
         private Vector3 length = new Vector3(2.64f, 2.3f, 1.6f);
 
@@ -30,7 +39,7 @@ namespace DestructionXNA
             this.game = game;
             this.model = model;
 
-            this.physicsObject = new PhysicsObject();
+            this.physicsObject = new PhysicsObject("NicoNicoTVChan");
             PhysicsObject po = this.physicsObject;
             po.SetCreateProperty(10.0f, po.Elasticity, po.StaticRoughness, po.DynamicRoughness);
             po.CreateBox(Vector3.Zero, Matrix.Identity, length);

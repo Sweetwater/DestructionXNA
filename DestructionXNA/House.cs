@@ -32,11 +32,11 @@ namespace DestructionXNA
         }
         private State state;
 
-        private float destructionDistance = 5f;
-        private float destrcutionRate = 0.8f;
+        private float destructionDistance = 3f;
+        private float destrcutionRate = 0.7f;
         private int destructionCount;
 
-        private int rebuildCount = 60 * 30;
+        private int rebuildCount = 60 * 15;
         private int rebuildCounter;
 
         private float rebuildRange = 50;
@@ -69,14 +69,14 @@ namespace DestructionXNA
                 new Layout(3.75f, 2.5f, 4.5f,  0, "halfWall"),
                 new Layout(0f, 5f, 4.5f,  0, "door"),
                 // 2階
-                new Layout(-5.5f, 7.5f, 2.5f,  90, "wall"),
-                new Layout(-5.5f, 7.5f, -2.5f,  90, "wall"),
-                new Layout(-2.5f, 7.5f, -4.5f,  0, "wall"),
-                new Layout(2.5f, 7.5f, -4.5f,  0, "wall"),
-                new Layout(5.5f, 7.5f, -2.5f,  90, "wall"),
-                new Layout(5.5f, 7.5f, 2.5f,  90, "wall"),
-                new Layout(-3.75f, 7.5f, 4.5f,  0, "halfWall"),
-                new Layout(3.75f, 7.5f, 4.5f,  0, "halfWall"),
+//                new Layout(-5.5f, 7.5f, 2.5f,  90, "wall"),
+//                new Layout(-5.5f, 7.5f, -2.5f,  90, "wall"),
+//                new Layout(-2.5f, 7.5f, -4.5f,  0, "wall"),
+//                new Layout(2.5f, 7.5f, -4.5f,  0, "wall"),
+//                new Layout(5.5f, 7.5f, -2.5f,  90, "wall"),
+//                new Layout(5.5f, 7.5f, 2.5f,  90, "wall"),
+//                new Layout(-3.75f, 7.5f, 4.5f,  0, "halfWall"),
+//                new Layout(3.75f, 7.5f, 4.5f,  0, "halfWall"),
                 // 3階
                 //new Layout(-5.5f, 12.5f, 2.5f,  90, "wall"),
                 //new Layout(-5.5f, 12.5f, -2.5f,  90, "wall"),
@@ -88,7 +88,7 @@ namespace DestructionXNA
                 //new Layout(2.5f, 12.5f, 4.5f,  0, "wall"),
                 //// 4階
                 //new Layout(0, 20f, 0,  0, "roof"),
-                new Layout(0, 15f, 0,  0, "roof"),
+//                new Layout(0, 15f, 0,  0, "roof"),
             };
         }
 
@@ -116,6 +116,7 @@ namespace DestructionXNA
             }
 
             this.destructionCount = (int)Math.Ceiling(blocks.Length * destrcutionRate);
+            DisableBlocks();
         }
 
         private void EnableBlocks()
@@ -138,8 +139,6 @@ namespace DestructionXNA
         }
 
         public void Build(Vector3 basePositoin) {
-            DisableBlocks();
-
             basePositoin.Y = 0;
 
             for (int i = 0; i < blocks.Length; i++)
@@ -151,7 +150,10 @@ namespace DestructionXNA
                 buildPositions[i] = position;
             }
 
-            EnableBlocks();
+            if (this.state == State.Disable)
+            {
+                EnableBlocks();
+            }
             this.state = State.Build;
         }
 
@@ -205,6 +207,11 @@ namespace DestructionXNA
                 rebuildCounter = rebuildCount;
                 this.state = State.Destruct;
             }
+        }
+
+        public void Disable()
+        {
+            DisableBlocks();
         }
     }
 }

@@ -4,6 +4,8 @@ using System.Linq;
 using System.Text;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework;
+using JigLibX.Physics;
+using JigLibX.Collision;
 
 namespace DestructionXNA.Block
 {
@@ -20,6 +22,14 @@ namespace DestructionXNA.Block
         protected Model model;
 
         protected PhysicsObject physicsObject;
+        public Body Body
+        {
+            get { return physicsObject.Body; }
+        }
+        public CollisionSkin CollisionSkin
+        {
+            get { return physicsObject.CollisionSkin; }
+        }
 
         protected BlockType type;
         public BlockType Type
@@ -54,7 +64,7 @@ namespace DestructionXNA.Block
             this.model = model;
             this.type = type;
 
-            physicsObject = new PhysicsObject();
+            physicsObject = new PhysicsObject(type.ToString());
             CreatePhysicsBody();
             physicsObject.Body.AllowFreezing = true;
         }

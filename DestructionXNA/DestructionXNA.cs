@@ -31,20 +31,17 @@ namespace DestructionXNA
             get { return spriteBatch; }
         }
 
-        Matrix projection;
         public Matrix Projection
         {
-            get { return projection; }
+            get { return camera.Projection; }
         }
-
-        private Matrix view;
         public Matrix View
         {
-            get { return view; }
+            get { return camera.View; }
         }
 
-        private Vector3 cameraPosition;
-
+        private Camera camera;
+        private Camera[] staticCameras;
 
         private DebugDrawer debugDrawer;
         public DebugDrawer DebugDrawer {
@@ -81,15 +78,8 @@ namespace DestructionXNA
 
         NicoNicoTVChan nicoTVChan;
         Beam beam;
-        BeamController baemController;
         Floor floor;
         House house;
-
-        WallBlock wallBlock;
-        HalfWallBlock halfWallBlock;
-        RoofBlock roofBlock;
-        DoorBlock doorBlock;
-
 
         public Model nicoTVchanModel;
         public Model floorModel;
@@ -100,7 +90,6 @@ namespace DestructionXNA
 
         public Model beamModel;
         public Texture2D beamTexture;
-
 
         public DestructionXNA()
         {
@@ -116,23 +105,33 @@ namespace DestructionXNA
 
             CreatePhysicsSystem();
 
-            cameraPosition = new Vector3(0, 10, 30);
-            UpdateViewMatrix();
+            CreateCamera();
 
             debugDrawer = new DebugDrawer(this);
             Components.Add(debugDrawer);
-            
-            //CreateContext();
+
             state = State.Pause;
         }
 
-        //private void CreateContext()
-        //{
-        //    var camera = new Camera(this);
-        //    context = new Context(new Camera(this), new DebugDrawer(this, camera));
-        //    Components.Add(context.Camera);
-        //    //Components.Add(context.DebugDrawer);
-        //}
+        private void CreateCamera()
+        {
+            Vector3[] cameraPositions = {
+                new Vector3(0, 10, 30),
+                new Vector3(30, 0, 0),
+                new Vector3(0, 30, 0.01f),
+                new Vector3(0, 100, 100),
+            };
+
+            this.staticCameras = new Camera[cameraPositions.Length];
+            for (int i = 0; i < staticCameras.Length; i++)
+			{
+                staticCameras[i] = new Camera(this);
+                staticCameras[i].Position = cameraPositions[i];
+                Components.Add(staticCameras[i]);
+			}
+
+            camera = staticCameras[0];
+        }
 
         private void CreatePhysicsSystem()
         {
@@ -143,9 +142,9 @@ namespace DestructionXNA
             physicSystem.SolverType = PhysicsSystem.Solver.Normal;
             physicSystem.CollisionSystem.UseSweepTests = true;
 
-            physicSystem.NumCollisionIterations = 10;
-            physicSystem.NumContactIterations = 10;
-            physicSystem.NumPenetrationRelaxtionTimesteps = 15;
+            physicSystem.NumCollisionIterations = 5;
+            physicSystem.NumContactIterations = 5;
+            physicSystem.NumPenetrationRelaxtionTimesteps = 30;
             physicSystem.Gravity = new Vector3(0, -9.8f, 0);
         }
 
@@ -163,16 +162,6 @@ namespace DestructionXNA
         protected override void Initialize()
         {
             // TODO: Add your initialization logic here
-
-            float viewWidth = GraphicsDevice.Viewport.Width;
-            float viewHeight = GraphicsDevice.Viewport.Height;
-            float aspectRatio = viewWidth / viewHeight;
-            projection = Matrix.CreatePerspectiveFieldOfView(
-                MathHelper.ToRadians(45.0f),
-                aspectRatio,
-                0.005f,
-                1000.0f);
-
 #if DEBUG && DEBUG_WINDOW
             debugWindow = new DebugWindow();
             debugWindow.Show();
@@ -199,67 +188,47 @@ namespace DestructionXNA
             this.beamModel = Content.Load<Model>("beam2");
             this.beamTexture = Content.Load<Texture2D>("comment_m9_2");
 
+            this.nicoTVChan = new NicoNicoTVChan(this, nicoTVchanModel);
+            this.floor = new Floor(this, floorModel);
+            this.house = new House(this);
+
+            this.beam = new Beam(this, beamTexture, beamModel);
+            this.beam.DrawOrder = int.MaxValue;
+            this.beam.CollisionSkin.NonCollidables.Add(this.floor.CollisionSkin);
+            this.beam.CollisionSkin.NonCollidables.Add(this.nicoTVChan.CollisionSkin);
+            this.nicoTVChan.Beam = this.beam;
+
             Reset();
         }
 
         private void Reset() {
             Destroy();
 
+            for (int i = 0; i < staticCameras.Length; i++)
+            {
+                Components.Add(staticCameras[i]);
+            }
+
             this.Components.Add(debugDrawer);
 
-            this.nicoTVChan = new NicoNicoTVChan(this, nicoTVchanModel);
             this.nicoTVChan.Position = new Vector3(-10, 2, 0);
             this.Components.Add(nicoTVChan);
 
-            this.beam = new Beam(this, beamTexture, beamModel);
-            this.beam.DrawOrder = int.MaxValue;
-            this.nicoTVChan.Beam = this.beam;
-            this.Components.Add(this.beam);
-
-            this.baemController = new BeamController(beam);
-            this.baemController.EnableController();
-
-            this.floor = new Floor(this, floorModel);
             this.Components.Add(floor);
 
-            this.house = new House(this);
             this.house.Build(new Vector3(10, 0, 0));
             this.Components.Add(house);
 
-            //this.wallBlock = new WallBlock(this, wallBlockModel);
-            //this.wallBlock.Position = new Vector3(12.5f, 2.5f, 0);
-            //this.Components.Add(wallBlock);
-
-            //this.halfWallBlock = new HalfWallBlock(this, halfWallBlockModel);
-            //this.halfWallBlock.Position = new Vector3(-11.25f, 2.5f, 0);
-            //this.Components.Add(halfWallBlock);
-
-            //this.roofBlock = new RoofBlock(this, roofBlockModel);
-            //this.roofBlock.Position = new Vector3(0, 10.0f, -10);
-            //this.roofBlock.Orientation = Matrix.CreateRotationZ(MathHelper.ToRadians(90));
-            //this.Components.Add(roofBlock);
-
-            //this.doorBlock = new DoorBlock(this, doorBlockModel);
-            //this.doorBlock.Position = new Vector3(0, 5, 10);
-            //this.Components.Add(doorBlock);
-
-            //HouseBuilder.Build(this, new Vector3(10, 0, 0));
-
+            this.beam.Disable();
+            this.Components.Add(beam);
 
             state = State.Pause;
         }
 
         private void Destroy()
         {
+            this.house.Disable();
             this.Components.Clear();
-        }
-
-        private void UpdateViewMatrix()
-        {
-            view = Matrix.CreateLookAt(
-                cameraPosition,
-                Vector3.Zero,
-                Vector3.Up);
         }
 
         /// <summary>
@@ -298,28 +267,12 @@ namespace DestructionXNA
                 }
             }
 #endif
-            Vector3 cameraMove = new Vector3(0.1f, 0.1f, 0.1f);
-
-            if (inputState.IsDown(Keys.LeftShift) ||
-                inputState.IsDown(Keys.RightShift))
-            {
-                if (inputState.IsDown(Keys.A)) cameraPosition.X -= cameraMove.X;
-                if (inputState.IsDown(Keys.D)) cameraPosition.X += cameraMove.X;
-                if (inputState.IsDown(Keys.Z)) cameraPosition.Y -= cameraMove.Y;
-                if (inputState.IsDown(Keys.X)) cameraPosition.Y += cameraMove.Y;
-                if (inputState.IsDown(Keys.W)) cameraPosition.Z -= cameraMove.Z;
-                if (inputState.IsDown(Keys.S)) cameraPosition.Z += cameraMove.Z;
-
-                if (inputState.IsDown(Keys.D1)) cameraPosition = new Vector3(0, 10, 30);
-                if (inputState.IsDown(Keys.D2)) cameraPosition = new Vector3(30, 0, 0);
-                if (inputState.IsDown(Keys.D3)) cameraPosition = new Vector3(0, 30, 0.01f);
-                if (inputState.IsDown(Keys.D4)) cameraPosition = new Vector3(0, 100, 100);
-
-                UpdateViewMatrix();
-            }
+            if (inputState.IsDown(Keys.D1)) camera = staticCameras[0];
+            if (inputState.IsDown(Keys.D2)) camera = staticCameras[1];
+            if (inputState.IsDown(Keys.D3)) camera = staticCameras[2];
+            if (inputState.IsDown(Keys.D4)) camera = staticCameras[3];
 
             debugDrawer.Enabled = InputState.IsDown(Keys.C);
-
 
             switch (state)
             {
@@ -357,11 +310,9 @@ namespace DestructionXNA
 
         public void DrawModel(Model model, Matrix world)
         {
-
             this.GraphicsDevice.RenderState.AlphaBlendEnable = true;
             this.GraphicsDevice.RenderState.SourceBlend = Blend.SourceAlpha;
             this.GraphicsDevice.RenderState.DestinationBlend = Blend.InverseSourceAlpha;
-            //this.GraphicsDevice.RenderState.AlphaTestEnable = true;
 
             foreach (ModelMesh mesh in model.Meshes)
             {
@@ -369,174 +320,11 @@ namespace DestructionXNA
                 {
                     effect.EnableDefaultLighting();
                     effect.World = world;
-                    effect.View = View;
-                    effect.Projection = Projection;
+                    effect.View = this.View;
+                    effect.Projection = this.Projection;
                 }
                 mesh.Draw();
             }
         }
     }
 }
-
-
-        //Context context;
-        //PhysicsSystem physicSystem = new PhysicsSystem();
-
-        //public class Context
-        //{
-        //    public Context(Camera camera, DebugDrawer debugDrawer)
-        //    {
-        //        this.Camera = camera;
-        //        this.DebugDrawer = debugDrawer;
-        //    }
-        //    public readonly Camera Camera;
-        //    public readonly DebugDrawer DebugDrawer;
-        //}
-        //readonly List<PhysicObject> items = new List<PhysicObject>();
-        //List<Constraint> constraints = new List<Constraint>();
-        //List<HingeJoint> joints = new List<HingeJoint>();
-        //readonly List<Controller> controllers = new List<Controller>();
-        //PhysicObject currentItem;
-
-
-        //void Add(PhysicObject item)
-        //{
-        //    Components.Add(item);
-        //    items.Add(item);
-        //    var controller = new SampleController(item.PhysicsBody, new Vector3(0, 12, 0), Vector3.Zero);
-        //    controller.EnableController();
-        //    controllers.Add(controller);
-        //}
-
-        //void Add(PhysicObject item, Vector3 hingePosition)
-        //{
-        //    Components.Add(item);
-        //    items.Add(item);
-
-        //    var previousItem = currentItem;
-        //    currentItem = item;
-        //    if (previousItem != null)
-        //    {
-        //        // ジョイントを作成する
-        //        var joint = new HingeJoint();
-        //        joint.Initialise(
-        //            previousItem.PhysicsBody, currentItem.PhysicsBody,
-        //            new Vector3(0, 0, 1),
-        //            hingePosition, 1.0f, 180, -180, 0.1f, 0.5f);
-        //        joint.EnableHinge();
-        //        joints.Add(joint);
-        //    }
-        //}
-
-        //void InitializeScene() {
-        //    // カメラを設定する
-        //    context.Camera.Position = new Vector3(0, 10, 10);
-        //    context.Camera.Target = new Vector3(0, 0, 0);
-
-        //    // 古いボディとそのコンポーネントを削除する
-        //    foreach (var item in items) {
-        //        Components.Remove(item);
-        //        item.PhysicsBody.DisableBody();
-        //        item.Dispose();
-        //    }
-        //    items.Clear();
-
-
-            //foreach (var joint in joints)
-            //{
-            //    joint.DisableController();
-            //}
-            //joints.Clear();
-
-            //currentItem = null;
-
-            //foreach (var controller in controllers)
-            //{
-            //    physicSystem.RemoveController(controller);
-            //}
-            //controllers.Clear();
-
-
-            //// 重力
-            //physicSystem.Gravity = new Vector3(0, -9.8f, 0);
-
-            //// 固定の床を作る
-            //var floor = new BoxObject(this, context, Content.Load<Model>("Crate"),
-            //    new Vector3(10, 1, 10), Matrix.Identity, Vector3.Zero);
-            //floor.PhysicsBody.Immovable = true;
-            //Add(floor);
-            ////Add(floor, Vector3.Zero);
-
-            //AddCrate(new Vector3(3, 0, 0), new Vector3(0.0f, 0, 0));
-            //AddCrate(new Vector3(6, 0, 0), new Vector3(1.5f, 0, 0));
-            //AddCrate(new Vector3(9, 0, 0), new Vector3(1.5f, 0, 0));
-            //AddCrate(new Vector3(12, 0, 0), new Vector3(1.5f, 0, 0));
-            //AddCrate(new Vector3(15, 0, 0), new Vector3(1.5f, 0, 0));
-        //}
-		/// <summary>
-		/// 木箱を追加する。
-		/// </summary>
-        //void AddCrate()
-        //{
-        //    var crate = new BoxObject(this, context, Content.Load<Model>("Crate"),
-        //        new Vector3(1, 1, 1),
-        //        Matrix.CreateRotationX((float)random.NextDouble()) *
-        //        Matrix.CreateRotationY((float)random.NextDouble()), new Vector3(0, 5, 0));
-        //    Add(crate);
-        //}
-        //void AddCrate(Vector3 position, Vector3 hingePosition)
-        //{
-        //    var crate = new BoxObject(this, context, Content.Load<Model>("Crate"),
-        //        new Vector3(2, 0.25f, 2), Matrix.Identity, position);
-        //    Add(crate, hingePosition);
-        //}
-
-    //#region 入力関連
-    //    KeyboardState previous;
-    //    KeyboardState current;
-    //    bool IsKeyPress(Keys key) {
-    //        return current.IsKeyDown(key) && previous.IsKeyUp(key);
-    //    }
-    //    public void HandleInput() {
-    //        previous = current;
-    //        current = Keyboard.GetState();
-    //        if (IsKeyPress(Keys.Space)) AddCrate();
-    //        if (IsKeyPress(Keys.X))
-    //        {
-    //            foreach (var controller in controllers)
-    //                controller.EnableController();
-    //        }
-    //        if (IsKeyPress(Keys.Z))
-    //        {
-    //            foreach (var controller in controllers)
-    //                controller.DisableController();
-    //        }
-    //        if (IsKeyPress(Keys.Delete)) InitializeScene();
-    //    }
-    //#endregion
-
-    //}
-
-    //class SampleController : Controller
-    //{
-    //    Body body;
-    //    Vector3 force;
-    //    Vector3 torque;
-
-    //    public SampleController(Body body, Vector3 force, Vector3 torque)
-    //    {
-    //      7  this.body = body;
-    //        this.force = force;
-    //        this.torque = torque;
-    //    }
-    //    public override void UpdateController(float dt)
-    //    {
-    //        if (body == null) return;
-    //        if (force != Vector3.Zero || torque != Vector3.Zero)
-    //        {
-    //            body.AddWorldForce(force);
-    //            body.AddWorldTorque(torque);
-    //            if (!body.IsActive) body.SetActive();
-    //        }
-    //    }
-    //}

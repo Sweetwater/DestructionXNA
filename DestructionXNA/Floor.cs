@@ -18,6 +18,14 @@ namespace DestructionXNA
         private Model model;
 
         private PhysicsObject physicsObject;
+        public Body Body
+        {
+            get { return physicsObject.Body; }
+        }
+        public CollisionSkin CollisionSkin
+        {
+            get { return physicsObject.CollisionSkin; }
+        }
 
         public Floor(DestructionXNA game, Model model)
             : base(game)
@@ -25,7 +33,7 @@ namespace DestructionXNA
             this.game = game;
             this.model = model;
 
-            this.physicsObject = new PhysicsObject();
+            this.physicsObject = new PhysicsObject("Floor");
             this.physicsObject.SetCreateProperty(1.0f, 0.2f, 0.7f, 0.6f);
             this.physicsObject.CreatePlane(Vector3.Up, 0);
             this.physicsObject.Body.Immovable = true;

@@ -49,9 +49,16 @@ namespace DestructionXNA
             get { return centerOfMass; }
         }
 
-        public PhysicsObject()
+        private String type;
+        public String Type {
+            get { return type; }
+        }
+
+        public PhysicsObject(String type)
         {
+            this.type = type;
             this.body = new Body();
+            this.body.ExternalData = type;
         }
 
         public void SetCreateProperty(float mass, float elasticity, float staticRoughness, float dynamicRoughness)
@@ -114,6 +121,8 @@ namespace DestructionXNA
             CollisionSkin.AddPrimitive(primitivePlane, materialProp);
 
             PhysicsSystem.CurrentPhysicsSystem.CollisionSystem.AddCollisionSkin(this.CollisionSkin);
+            Body.CollisionSkin = CollisionSkin;
+            CollisionSkin.Owner = Body;
         }
 
         private void SetupProperty(Vector3 position, Matrix orientation )
