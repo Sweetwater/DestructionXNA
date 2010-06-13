@@ -12,12 +12,12 @@ namespace DestructionXNA.Block
 {
     class DoorBlock : BaseBlock
     {
-        Vector3 size = new Vector3(5f, 10f, 1f);
+        Vector3 size = new Vector3(5f, 5f, 1f);
 
         // コリジョンを複数しようすると重心がずれるが
         // 値を算出する方法が無いため実際に地面において
         // デバッガで高さを取得して設定する
-        Vector3 offset = new Vector3(0, -0.603569f, 0);
+        Vector3 offset = new Vector3(0, -0.46413851f, 0);
 
         public DoorBlock(DestructionXNA game, Model model) :
             base(game, model, BlockType.Roof) {

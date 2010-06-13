@@ -46,13 +46,8 @@ namespace DestructionXNA.Camera
             this.game = game;
             this.position = new Vector3(0, 10, 30);
             this.target = new Vector3(0, 0, 0);
-            UpdateViewMatrix();
-        }
-
-        public override void Initialize()
-        {
             InitializeProjection();
-            base.Initialize();
+            UpdateViewMatrix();
         }
 
         private void InitializeProjection()
@@ -69,14 +64,9 @@ namespace DestructionXNA.Camera
                 1000.0f);
         }
 
-        private void UpdateViewMatrix()
+        protected void UpdateViewMatrix()
         {
             this.view = Matrix.CreateLookAt(position, target, up);
-        }
-
-        public override void Update(GameTime gameTime)
-        {
-            base.Update(gameTime);
         }
     }
 }

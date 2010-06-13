@@ -70,6 +70,7 @@ namespace DestructionXNA.Tvchan
         }
 
         private void CreateCollision() {
+            physicsObject.SetCreateProperty(0.1f, 200f, physicsObject.StaticRoughness, physicsObject.DynamicRoughness);
             physicsObject.CreateBox(Vector3.Zero, Matrix.Identity, boxSplitLength);
         }
 

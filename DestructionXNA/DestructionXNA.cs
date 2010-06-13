@@ -19,16 +19,16 @@ namespace DestructionXNA
     /// </summary>
     public class DestructionXNA : Microsoft.Xna.Framework.Game
     {
-        enum State {
+        private enum State {
             Pause,
             Play,
         }
 
-        State state;
+        private State state;
 
-        GraphicsDeviceManager graphics;
+        private GraphicsDeviceManager graphics;
 
-        SpriteBatch spriteBatch;
+        private SpriteBatch spriteBatch;
         public SpriteBatch SpriteBatch
         {
             get { return spriteBatch; }
@@ -45,19 +45,20 @@ namespace DestructionXNA
 
         private BaseCamera camera;
         private BaseCamera[] staticCameras;
+        private ThirdPersonCamera thirdPersonCamera;
 
         private DebugDrawer debugDrawer;
         public DebugDrawer DebugDrawer {
             get { return debugDrawer; }
         }
 
-        DebugWindow debugWindow;
+        private DebugWindow debugWindow;
         public DebugWindow DebugWindow
         {
             get { return debugWindow; }
         }
 
-        InputState inputState;
+        private InputState inputState;
         public InputState InputState
         {
             get { return inputState; }
@@ -72,17 +73,20 @@ namespace DestructionXNA
             get { return 480; }
         }
 
-        Random random;
+        private Random random;
         public Random Random {
             get { return random; }
         }
 
-        PhysicsSystem physicSystem;
+        private PhysicsSystem physicSystem;
 
-        NicoNicoTVChan nicoTVChan;
-        Beam beam;
-        Floor floor;
-        House house;
+        private NicoNicoTVChan nicoTVChan;
+        private Beam beam;
+
+        private TVChanController controller;
+        
+        private Floor floor;
+        private House house;
 
         public Model nicoTVchanModel;
         public Model floorModel;
@@ -101,14 +105,15 @@ namespace DestructionXNA
             graphics.PreferredBackBufferWidth = ScreenWidth;
             graphics.PreferredBackBufferHeight = ScreenHeight;
 
+            IsFixedTimeStep = true;
+            TargetElapsedTime = new TimeSpan(10000000L / 30L);
+
             IsMouseVisible = true;
 
             random = new Random();
             inputState = new InputState();
 
             CreatePhysicsSystem();
-
-            CreateCamera();
 
             debugDrawer = new DebugDrawer(this);
             Components.Add(debugDrawer);
@@ -130,10 +135,11 @@ namespace DestructionXNA
 			{
                 staticCameras[i] = new BaseCamera(this);
                 staticCameras[i].Position = cameraPositions[i];
-                Components.Add(staticCameras[i]);
 			}
 
-            camera = staticCameras[0];
+            this.thirdPersonCamera = new ThirdPersonCamera(this);
+
+            camera = thirdPersonCamera;
         }
 
         private void CreatePhysicsSystem()
@@ -147,7 +153,7 @@ namespace DestructionXNA
 
             physicSystem.NumCollisionIterations = 5;
             physicSystem.NumContactIterations = 5;
-            physicSystem.NumPenetrationRelaxtionTimesteps = 30;
+            physicSystem.NumPenetrationRelaxtionTimesteps = 15;
             physicSystem.Gravity = new Vector3(0, -9.8f, 0);
         }
 
@@ -165,6 +171,8 @@ namespace DestructionXNA
         protected override void Initialize()
         {
             // TODO: Add your initialization logic here
+            CreateCamera();
+
 #if DEBUG && DEBUG_WINDOW
             debugWindow = new DebugWindow();
             debugWindow.Show();
@@ -191,15 +199,21 @@ namespace DestructionXNA
             this.beamModel = Content.Load<Model>("beam2");
             this.beamTexture = Content.Load<Texture2D>("comment_m9_2");
 
-            this.nicoTVChan = new NicoNicoTVChan(this, nicoTVchanModel);
             this.floor = new Floor(this, floorModel);
             this.house = new House(this);
 
+            this.nicoTVChan = new NicoNicoTVChan(this, nicoTVchanModel);
+
             this.beam = new Beam(this, beamTexture, beamModel);
             this.beam.DrawOrder = int.MaxValue;
-            this.beam.CollisionSkin.NonCollidables.Add(this.floor.CollisionSkin);
-            this.beam.CollisionSkin.NonCollidables.Add(this.nicoTVChan.CollisionSkin);
-            this.nicoTVChan.Beam = this.beam;
+            this.beam.CollisionSkin.NonCollidables.Add(floor.CollisionSkin);
+            this.beam.CollisionSkin.NonCollidables.Add(nicoTVChan.CollisionSkin);
+
+            this.controller = new TVChanController(this);
+            this.controller.TVChan = nicoTVChan;
+            this.controller.Beam = beam;
+
+            this.thirdPersonCamera.TargetBody = nicoTVChan.Body;
 
             Reset();
         }
@@ -207,23 +221,22 @@ namespace DestructionXNA
         private void Reset() {
             Destroy();
 
-            for (int i = 0; i < staticCameras.Length; i++)
-            {
-                Components.Add(staticCameras[i]);
-            }
+            Components.Add(camera);
 
             this.Components.Add(debugDrawer);
 
-            this.nicoTVChan.Position = new Vector3(-10, 2, 0);
+            this.nicoTVChan.MoveTo(new Vector3(-10, 1, 0), Matrix.Identity);
             this.Components.Add(nicoTVChan);
+
+            this.beam.Disable();
+            this.Components.Add(beam);
+
+            this.Components.Add(controller);
 
             this.Components.Add(floor);
 
             this.house.Build(new Vector3(10, 0, 0));
             this.Components.Add(house);
-
-            this.beam.Disable();
-            this.Components.Add(beam);
 
             state = State.Pause;
         }
@@ -270,19 +283,27 @@ namespace DestructionXNA
                 }
             }
 #endif
-            if (inputState.IsDown(Keys.D1)) camera = staticCameras[0];
-            if (inputState.IsDown(Keys.D2)) camera = staticCameras[1];
-            if (inputState.IsDown(Keys.D3)) camera = staticCameras[2];
-            if (inputState.IsDown(Keys.D4)) camera = staticCameras[3];
+            BaseCamera oldCamera = camera;
+            if (inputState.IsDown(Keys.D1)) camera = thirdPersonCamera;
+            if (inputState.IsDown(Keys.D2)) camera = staticCameras[0];
+            if (inputState.IsDown(Keys.D3)) camera = staticCameras[1];
+            if (inputState.IsDown(Keys.D4)) camera = staticCameras[2];
+            if (inputState.IsDown(Keys.D5)) camera = staticCameras[3];
+
+            if (oldCamera != camera) {
+                Components.Remove(oldCamera);
+                Components.Add(camera);
+            }
 
             debugDrawer.Enabled = InputState.IsDown(Keys.C);
 
             switch (state)
             {
                 case State.Pause:
-                    if (inputState.IsTrigger(Keys.Enter)) {
-                        state = State.Play;
-                    }
+                    //if (inputState.IsTrigger(Keys.Enter)) {
+                    //    state = State.Play;
+                    //}
+                    state = State.Play;
                     break;
                 case State.Play:
                     if (inputState.IsTrigger(Keys.Back))

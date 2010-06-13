@@ -90,8 +90,9 @@
     <Compile Include="Block\HalfWallBlock.cs" />
     <Compile Include="Block\RoofBlock.cs" />
     <Compile Include="Block\WallBlock.cs" />
-    <Compile Include="Camera\Camera.cs" />
-    <Compile Include="Camera\Third PersoCamera.cs" />
+    <Compile Include="Camera\BaseCamera.cs" />
+    <Compile Include="Camera\ThirdPersonCamera.cs" />
+    <Compile Include="Controller.cs" />
     <Compile Include="DebugDrawer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Program.cs" />

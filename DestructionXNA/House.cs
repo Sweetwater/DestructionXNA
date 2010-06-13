@@ -67,16 +67,17 @@ namespace DestructionXNA
                 new Layout(5.5f, 2.5f, 2.5f,  90, "wall"),
                 new Layout(-3.75f, 2.5f, 4.5f,  0, "halfWall"),
                 new Layout(3.75f, 2.5f, 4.5f,  0, "halfWall"),
-                new Layout(0f, 5f, 4.5f,  0, "door"),
+                new Layout(0f, 2.5f, 4.5f,  0, "door"),
                 // 2階
-//                new Layout(-5.5f, 7.5f, 2.5f,  90, "wall"),
-//                new Layout(-5.5f, 7.5f, -2.5f,  90, "wall"),
-//                new Layout(-2.5f, 7.5f, -4.5f,  0, "wall"),
-//                new Layout(2.5f, 7.5f, -4.5f,  0, "wall"),
-//                new Layout(5.5f, 7.5f, -2.5f,  90, "wall"),
-//                new Layout(5.5f, 7.5f, 2.5f,  90, "wall"),
-//                new Layout(-3.75f, 7.5f, 4.5f,  0, "halfWall"),
-//                new Layout(3.75f, 7.5f, 4.5f,  0, "halfWall"),
+                new Layout(-5.5f, 7.5f, 2.5f,  90, "wall"),
+                new Layout(-5.5f, 7.5f, -2.5f,  90, "wall"),
+                new Layout(-2.5f, 7.5f, -4.5f,  0, "wall"),
+                new Layout(2.5f, 7.5f, -4.5f,  0, "wall"),
+                new Layout(5.5f, 7.5f, -2.5f,  90, "wall"),
+                new Layout(5.5f, 7.5f, 2.5f,  90, "wall"),
+                new Layout(-3.75f, 7.5f, 4.5f,  0, "halfWall"),
+                new Layout(3.75f, 7.5f, 4.5f,  0, "halfWall"),
+                new Layout(0f, 7.5f, 4.5f,  0, "wall"),
                 // 3階
                 //new Layout(-5.5f, 12.5f, 2.5f,  90, "wall"),
                 //new Layout(-5.5f, 12.5f, -2.5f,  90, "wall"),
@@ -88,7 +89,7 @@ namespace DestructionXNA
                 //new Layout(2.5f, 12.5f, 4.5f,  0, "wall"),
                 //// 4階
                 //new Layout(0, 20f, 0,  0, "roof"),
-//                new Layout(0, 15f, 0,  0, "roof"),
+                new Layout(0, 15f, 0,  0, "roof"),
             };
         }
 

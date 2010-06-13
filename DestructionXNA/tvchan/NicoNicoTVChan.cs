@@ -18,6 +18,8 @@ namespace DestructionXNA.Tvchan
         private DestructionXNA game;
         private Model model;
 
+        private Vector3 length = new Vector3(2.64f, 2.3f, 1.6f);
+
         private PhysicsObject physicsObject;
         public Body Body
         {
@@ -28,13 +30,9 @@ namespace DestructionXNA.Tvchan
             get { return physicsObject.CollisionSkin; }
         }
 
-        private Vector3 length = new Vector3(2.64f, 2.3f, 1.6f);
-
-        public Vector3 Position {
-            set { physicsObject.Body.Position = value; }
+        public void MoveTo(Vector3 position, Matrix orientation) {
+            this.Body.MoveTo(position, orientation);
         }
-
-        public Beam Beam { get; set; }
 
         public NicoNicoTVChan(DestructionXNA game, Model model) : base(game) {
             this.game = game;
@@ -42,54 +40,58 @@ namespace DestructionXNA.Tvchan
 
             this.physicsObject = new PhysicsObject("NicoNicoTVChan");
             PhysicsObject po = this.physicsObject;
-            po.SetCreateProperty(10.0f, po.Elasticity, po.StaticRoughness, po.DynamicRoughness);
+            po.SetCreateProperty(2, 2f, 1f, 1f);
             po.CreateBox(Vector3.Zero, Matrix.Identity, length);
             po.Body.AllowFreezing = false;
         }
 
+        private float turnSpeed = 0.2f;
+        private float turnYSpeed = MathHelper.ToRadians(3f);
+        private float spinXSpeed = MathHelper.ToRadians(-10);
+        private Matrix rotationMatrix = Matrix.Identity;
+
+        private float speed = 0.5f;
+        private Vector3 moveVelocity;
+
+        private Vector3 jumpImpulse = new Vector3(0, 100f, 0);
+
+        public void TurnLeft() {
+            moveVelocity.Z = turnSpeed;
+            rotationMatrix = Matrix.CreateRotationY(turnYSpeed);
+        }
+
+        public void TurnRight()
+        {
+            moveVelocity.Z = turnSpeed;
+            rotationMatrix = Matrix.CreateRotationY(-turnYSpeed);
+        }
+
+        public void MoveForward() {
+            moveVelocity.Z = speed;
+        }
+
+        public void Spin()
+        {
+            rotationMatrix = Matrix.CreateRotationX(spinXSpeed);
+        }
+
+        public void Jump() {
+            Body.ApplyWorldImpulse(jumpImpulse);
+        }
+
         public override void Update(GameTime gameTime)
         {
-            Matrix rotationMatrix = Matrix.Identity;
-            Vector3 moveVector = Vector3.Zero;
-            if (game.InputState.IsDown(Keys.Left))
-            {
-                moveVector = new Vector3(0, 0, 0.5f);
-                rotationMatrix = Matrix.CreateRotationY(MathHelper.ToRadians(5));
-            }
-            else if (game.InputState.IsDown(Keys.Right)) {
-                moveVector = new Vector3(0, 0, 0.5f);
-                rotationMatrix = Matrix.CreateRotationY(-MathHelper.ToRadians(5));
-            }
-            else if (game.InputState.IsDown(Keys.Up))
-            {
-                moveVector = new Vector3(0, 0, 0.5f);
-            }
-            else if (game.InputState.IsDown(Keys.Down))
-            {
-                rotationMatrix = Matrix.CreateRotationX(-MathHelper.ToRadians(10));
-            }
+            Matrix orientation = Body.Orientation;
+            Matrix newOrientation = rotationMatrix * orientation;
 
-            if (game.InputState.IsTrigger(Keys.B))
-            {
-                Vector3 beamFirePos = new Vector3(0, 0, 2);
+            moveVelocity = Vector3.Transform(moveVelocity, newOrientation);
+            moveVelocity.Y = 0;
 
-                Matrix matrix = this.physicsObject.Body.Orientation;
-                matrix.Translation = Vector3.Transform(beamFirePos, matrix);
-                matrix.Translation += this.physicsObject.Body.Position;
+            Body.Orientation = newOrientation;
+            Body.Velocity += moveVelocity;
 
-                Beam.Fire(matrix);
-            }
-
-            if (game.InputState.IsTrigger(Keys.Space))
-            {
-                physicsObject.Body.ApplyWorldImpulse(new Vector3(0, 100f, 0));
-            }
-
-
-            physicsObject.Body.Orientation = rotationMatrix * physicsObject.Body.Orientation;
-            moveVector = Vector3.Transform(moveVector, physicsObject.Body.Orientation);
-            moveVector.Y = 0;
-            physicsObject.Body.Velocity += moveVector;
+            rotationMatrix = Matrix.Identity;
+            moveVelocity = Vector3.Zero;
 
             base.Update(gameTime);
         }
